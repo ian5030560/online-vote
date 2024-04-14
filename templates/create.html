@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>線上投票平台</title>
+<link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/root.css" />
+<link rel="stylesheet" href="css/create.css"/>
+<style>
+    .descript {
+        resize: none;
+    }
+
+    .choice-container {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+
+<body>
+    <header>
+        <div class="container-fluid">
+            <a class="mb-0 text-decoration-none fs-4 text-body" href="/">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-arrow-90deg-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708z" />
+                </svg>
+                回到首頁
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container justify-content-center align-items-center">
+            <form class="p-5">
+                <div class="row mb-3">
+                    <label class="col-form-label col-1" for="problem">題目:</label>
+                    <div class="col-11">
+                        <input class="form-control" type="text" id="problem" name="problem" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-form-label col-1" for="descript">敘述:</label>
+                    <div class="col-11">
+                        <textarea class="form-control descript" id="descript" name="descript" rows="5"></textarea>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-form-label col-1" for="image">圖片:</label>
+                    <div class="col-11">
+                        <input type="file" class="form-control" id="image" name="image">
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mb-3 border p-1">
+                    <ol class="container-fluid px-3 choice-container" id="choice-container"></ol>
+                    <div class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button" id="choice-add">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-plus-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                            <path
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                        </svg>
+
+                        <span class="mx-1">
+                            增加選項
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <span class="col-1">票數:</span>
+                    <div class="col-11">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ticket" id="single" checked
+                                value="single">
+                            <label class="form-check-label" for="single">單選</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="ticket" id="multiple" value="multiple">
+                            <label class="form-check-label" for="multiple">多選</label>
+                        </div>
+
+                        <div class="row d-inline-flex invisible" id="ticket-number-container">
+                            <div class="col-3 text-end">
+                                <label for="ticket-number">數量:</label>
+                            </div>
+                            <div class="col-9">
+                                <input class="form-control" type="number" name="ticket-number" id="ticket-number" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <span class="col-1">日期:</span>
+                    <div class="col-11">
+                        <div class="input-group">
+                            <input type="date" class="form-control" placeholder="開始" aria-label="start">
+                            <span class="input-group-text">~</span>
+                            <input type="date" class="form-control" placeholder="結束" aria-label="end">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-primary me-3">創建</button>
+                    <button type="reset" class="btn btn-outline-primary">清除</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+<script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="dist/create.js" type="module"></script>
+
+</html>

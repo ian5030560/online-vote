@@ -1,0 +1,7 @@
+.mask{
+    opacity: 0;
+}
+
+.mask:hover{
+    opacity: 1;
+}

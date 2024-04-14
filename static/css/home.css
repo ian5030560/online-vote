@@ -1,0 +1,20 @@
+.card-table > thead{
+    display: none;
+}
+
+.card-table > tbody tr{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #dee2e6;
+    margin: 3px;
+}
+
+.card-table > tbody{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.card-table > tbody tr > th,
+.card-table > tbody tr > th, td{
+    border: none;
+}
