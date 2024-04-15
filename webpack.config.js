@@ -4,6 +4,7 @@ module.exports = {
   entry: {
     create: "./static/js/Choice/index.ts",
     home: "./static/js/Home/index.ts",
+    user: "./static/js/User/index.ts"
   },
   module: {
     rules: [

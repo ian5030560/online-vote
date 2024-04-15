@@ -1,3 +1,4 @@
+import { ThemeButton } from "../ui";
 import create, { radioListener } from "../utils";
 import Table from "./table";
 
@@ -35,4 +36,8 @@ window.onload = () => {
             table.classList.remove("card-table");
         }
     })
+
+    let theme = ThemeButton({mode: "light"});
+    theme[0].classList.add("m-5 p-2");
+    document.body.appendChild(theme[0] as Node);
 }

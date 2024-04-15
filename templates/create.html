@@ -5,7 +5,7 @@
 <title>線上投票平台</title>
 <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
 <link rel="stylesheet" href="css/root.css" />
-<link rel="stylesheet" href="css/create.css"/>
+<link rel="stylesheet" href="css/create.css" />
 <style>
     .descript {
         resize: none;
@@ -18,18 +18,32 @@
 </style>
 
 <body>
-    <header>
+    <nav class="navbar bg-primary-subtle p-2 sticky-top">
         <div class="container-fluid">
-            <a class="mb-0 text-decoration-none fs-4 text-body" href="/">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-arrow-90deg-left" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                        d="M1.146 4.854a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H12.5A2.5 2.5 0 0 1 15 6.5v8a.5.5 0 0 1-1 0v-8A1.5 1.5 0 0 0 12.5 5H2.707l3.147 3.146a.5.5 0 1 1-.708.708z" />
-                </svg>
-                回到首頁
-            </a>
+            <div class="d-flex p-2">
+                <a class="navbar-brand mb-0 h1" href="/">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z" />
+                    </svg>
+                    線上投票平台
+                </a>
+            </div>
+            <ul class="navbar-nav flex-row flex-wrap w-25 justify-content-end">
+                <!-- <li class="g-signin2 navbar-text" onclick="handleSignIn">登入</li> -->
+                <li class="nav-item col-auto px-1">
+                    <a class="nav-link user-nav px-2 rounded-1" href="user">我的題目</a>
+                </li>
+                <li class="nav-item col-auto px-1">
+                    <div class="vr h-100"></div>
+                </li>
+                <li class="nav-item col-auto px-1">
+                    <span class="nav-link user-nav px-2 rounded-1">登出</span>
+                </li>
+            </ul>
         </div>
-    </header>
+    </nav>
 
     <main>
         <div class="container justify-content-center align-items-center">
@@ -55,9 +69,10 @@
                     </div>
                 </div>
 
-                <div class="d-grid gap-2 mb-3 border p-1">
-                    <ol class="container-fluid px-3 choice-container" id="choice-container"></ol>
-                    <div class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button" id="choice-add">
+                <div class="container-fluid px-3 choice-container mb-3 border p-1">
+                    <ol id="choice-container"></ol>
+                    <div class="btn btn-outline-primary d-flex align-items-center justify-content-center" type="button"
+                        id="choice-add">
 
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-plus-circle" viewBox="0 0 16 16">

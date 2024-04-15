@@ -15,7 +15,8 @@
   "dependencies": {
     "@types/bootstrap": "^5.2.10",
     "bootstrap": "^5.3.3",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "google-auth-library": "^9.7.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

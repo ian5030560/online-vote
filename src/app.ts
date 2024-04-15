@@ -5,6 +5,7 @@ let app = express();
 
 app.use(express.static("node_modules"));
 app.use(express.static("static"));
+app.use(express.json());
 
 app.get('/',(req, res) => {
     res.sendFile(render("home.html"));
@@ -12,6 +13,15 @@ app.get('/',(req, res) => {
 
 app.get("/create", (req, res) => {
     res.sendFile(render("create.html"));
+})
+
+app.post("/auth/google", (req, res) => {
+    console.log(req.body);
+    res.send('Hello');
+})
+
+app.get("/user", (req, res) => {
+    res.sendFile(render("user.html"));
 })
 
 app.listen(4000, function () {

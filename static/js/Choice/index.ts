@@ -1,3 +1,4 @@
+import { ThemeButton } from "../ui";
 import Choice from "./choiceItem";
 
 let ticket = document.getElementsByName("ticket");
@@ -24,4 +25,8 @@ window.onload = () => {
     choiceAdd?.addEventListener("click", () => {
         choiceContainer?.appendChild(Choice({ container: choiceContainer }));
     })
+
+    let theme = ThemeButton({mode: "light"});
+    theme[0].classList.add("m-5 p-2");
+    document.body.appendChild(theme[0] as Node);
 }
