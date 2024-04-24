@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include basic/head %>
+    <title>線上投票平台</title>
+    <%- include basic/stylesheet %>
+</head>
+<style>
+    .box {
+        min-height: 300px;
+    }
+
+    .box-item {
+        max-height: 500px;
+    }
+</style>
+
+<body>
+    <%- include navbar/start %>
+        <%- include navbar/left/start %>
+        <%- include navbar/left/end %>
+        <%- include navbar/right/index %>
+    <%- include navbar/end %>
+    <main class="h-75 mt-3">
+        <div class="container mb-3">
+            <div class="row">
+                <div class="col-1">
+                    <div class="dropdown-center">
+                        <button class="btn dropdown-toggle" type="button" aria-label="search-btn"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-funnel-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" type="button">進行中</button></li>
+                            <li><button class="dropdown-item" type="button">未開始</button></li>
+                            <li><button class="dropdown-item" type="button">已結束</button></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div class="input-group">
+                        <span class="input-group-text" id="search-label"><i class="bi bi-search"></i></span>
+                        <input type="text" id="search" class="form-control" placeholder="搜尋問題" aria-label="search"
+                            aria-describedby="search-label" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container overflow-y-auto h-100 border p-3" id="box">
+            <% items.forEach((item, index) => { %>
+                <div class="border position-relative p-2 mb-2" style="max-height: 500px;" id="box-<%= index %>">
+                    <div class="d-flex align-items-baseline">
+                        <h2 class="me-2"><%= item.title %></h2>
+                        <button type="button" class="btn me-2" data-bs-toggle="collapse" 
+                        data-bs-target="#<%= index %>" aria-expanded="false" aria-controls="<%= index %>">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <p class="text-secondary-emphasis">
+                            <%= `狀態: ${item.state}, 投票人數: ${item.number}人` %><br/>
+                            <%= `日期: ${item.start}~${item.end}` %>
+                        </p>
+                        <% if (item.self) { %>
+                            <div role="button" class="btn btn-outline-danger position-absolute top-0 end-0 m-2" 
+                            data-bs-toggle="modal" data-bs-target="#closeModal" data-bs-title=<%= item.title %>
+                            data-bs-boxId=<%= index %>>
+                                <i class="bi bi-x-lg"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    <p class="text-center"><%= item.description %></p>
+                    <ol className="collapse" id="<%= index %>">
+                        <% item.items.forEach(data => { %>
+                            <li>
+                                <div class="container-fluid">
+                                    <div class="row align-items-center">
+                                        <div class="col-3">
+                                            <div class="d-flex align-items-center">
+                                                <span class="float-start me-3">
+                                                    <img src=<%= data.src %> alt="沒有圖片" width="100"/>
+                                                </span>
+                                                <span class="fw-bold text-body-secondary text-break w-100 text-center">
+                                                    <%= data.name %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-9">
+                                            <div class="progress" role="progressbar" aria-label="prgress-label"
+                                            aria-valuemin="0" aria-valuemax="100" style="height: 50px;"
+                                            aria-valuenow=<%= data.value %>>
+                                                <div class="progress-bar" style="height: 50px;width: <%= data.value / item.number * 100 %>%;">
+                                                    <%= data.value %>人
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        <% }) %>
+                    </ol>
+                </div>
+            <% }) %>
+        </div>
+    </main>
+
+    <div class="modal fade" id="closeModal" tabindex="-1" aria-labelledby="closeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="closeModalLabel">是否刪除</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-value="ok">確認</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-value="cancel">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<%- include basic/module %>
+<script src="dist/record.js"></script>
+
+</html>

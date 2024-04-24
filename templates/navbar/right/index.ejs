@@ -1,0 +1,16 @@
+<ul class="navbar-nav flex-row flex-wrap w-25 justify-content-end">
+    <% if (!signIn) { %>
+        <li class="g-signin2 navbar-text" onclick="handleSignIn">登入</li>
+    <% } else { %>
+        <% for (let i = 0; i < actions.length; i++) { %>
+            <li class="nav-item col-auto px-1">
+                <a class="nav-link user-nav px-2 rounded-1" href=<%= actions[i].url %>><%= actions[i].name %></a>
+            </li>
+            <% if (i < actions.length - 1) { %>
+                <li class="nav-item col-auto px-1">
+                    <div class="vr h-100"></div>
+                </li>
+            <% } %>
+        <% } %>
+    <% } %>
+</ul>

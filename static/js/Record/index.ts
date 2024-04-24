@@ -1,49 +1,15 @@
+import { Modal } from "bootstrap";
 import { ThemeButton } from "../ui";
-import { add } from "../utils";
-import BoxItem, { STATE } from "./item";
 
 let box = document.getElementById("box");
 let search = document.getElementById("search");
+let closeModal = document.getElementById("closeModal");
 
 window.onload = () => {
     let theme = ThemeButton({ mode: "light" });
     theme[0].classList.add("m-5");
     document.body.appendChild(theme[0] as Node);
-    let dataset = [
-        {
-            title: "Example1",
-            description: "something...",
-            state: STATE.ING,
-            number: 50,
-            items: [
-                {
-                    src: "assets/437570580_1470748313790701_4345547566074917697_n.jpg",
-                    name: "example1",
-                    value: 31,
-                }
-            ],
-            start: "2024/04/01",
-            end: "2024/04/01",
-            self: false,
-        },
-        {
-            title: "Example2",
-            description: "something...",
-            state: STATE.END,
-            number: 50,
-            items: [
-                {
-                    src: "assets/437570580_1470748313790701_4345547566074917697_n.jpg",
-                    name: "example1",
-                    value: 10,
-                }
-            ],
-            start: "2024/04/01",
-            end: "2024/04/01",
-            self: true,
-        }
-    ]
-    add(box!, dataset.map(data => BoxItem(data)));
+
     search?.addEventListener("input", (e) => {
         let val = (e.target as HTMLInputElement).value;
    
@@ -57,4 +23,16 @@ window.onload = () => {
             }
         }
     });
+
+    closeModal?.addEventListener("show.bs.modal", (e) => {
+        let target = (e as Modal.Event).relatedTarget;
+        let title = target!.getAttribute("data-bs-title")!;
+        let boxId = target!.getAttribute("data-bs-boxId");
+        let boxItem = document.getElementById(`box-${boxId}`);
+        closeModal.querySelector(".modal-body")!.innerHTML = `是否刪除${title}`;
+        let okButton = closeModal.querySelector(".modal-footer [data-bs-value=\"ok\"]");
+        okButton?.addEventListener("click", () => {
+            boxItem?.remove();
+        }, {once: true});
+    })
 }

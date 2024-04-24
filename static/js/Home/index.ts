@@ -1,37 +1,21 @@
 import { ThemeButton } from "../ui";
-import create, { radioListener } from "../utils";
-import Table from "./table";
+import { radioListener } from "../utils";
 
-let resultArea = document.getElementById("result-area");
+let table = document.getElementById("result");
 
 window.onload = () => {
-    let table = Table({
-        columns: ["主題", "敘述", "日期", "人數"],
-        items: [
-            ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
-            ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
-        ].map(item => {
-            return item.map((it) => {
-                let div = create("div");
-                div.innerText = it;
-                return div;
-            })
-        })
-    });
-
-    resultArea?.appendChild(table);
 
     radioListener("format", ["table", "card"], (e) => {
         let value = (e.target as HTMLInputElement).value;
         if(value !== "table"){
-            table.classList.add("card-table");
+            table!.classList.add("card-table");
         }
         else{
-            table.classList.remove("card-table");
+            table!.classList.remove("card-table");
         }
     })
 
     let theme = ThemeButton({mode: "light"});
-    theme[0].classList.add("m-5 p-2");
+    theme[0].classList.add("m-5");
     document.body.appendChild(theme[0] as Node);
 }

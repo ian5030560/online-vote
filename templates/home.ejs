@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include basic/head %>
+        <meta name="google-signin-client_id" content="992109892971-etdq1mq060644jqa7eq39vq29s2huoav.apps.googleusercontent.com">
+        
+        <title>線上投票平台</title>
+        <%- include basic/stylesheet %>
+        <link rel="stylesheet" href="css/home.css" />
+    </head>
+
+<body>
+    <%- include navbar/start %>
+        <%- include navbar/left/start %>
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">進行中</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">未開始</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">已結束</a>
+                </li>
+            </ul>
+        <%- include navbar/left/end %>
+        <%- include navbar/right/index %>
+    <%- include navbar/end %>
+    <main class="px-4 py-5">
+        <div class="d-flex">
+            <div class="btn-group me-2" role="group">
+                <input type="radio" class="btn-check" name="format" id="table" autocomplete="off" checked value="table">
+                <label class="btn btn-outline-primary" for="table">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-table" viewBox="0 0 16 16">
+                        <path
+                            d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z" />
+                    </svg>
+                </label>
+
+                <input type="radio" class="btn-check" name="format" id="card" autocomplete="off" value="card">
+                <label class="btn btn-outline-primary" for="card">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-border-all" viewBox="0 0 16 16">
+                        <path d="M0 0h16v16H0zm1 1v6.5h6.5V1zm7.5 0v6.5H15V1zM15 8.5H8.5V15H15zM7.5 15V8.5H1V15z" />
+                    </svg>
+                </label>
+            </div>
+            <div class="input-group w-50">
+                <input type="text" class="form-control" placeholder="搜尋主題..." aria-label="problem"
+                    aria-describedby="problem-button">
+                <button class="btn btn-outline-primary" type="button" id="problem-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-search" viewBox="0 0 16 16">
+                        <path
+                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="container pt-3">
+            <table class="table" id="result">
+                <thead>
+                    <tr>
+                        <% cols.forEach(col => { %>
+                            <th scope="col"><%= col %></th>
+                        <% }) %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% items.forEach(item => { %>
+                        <tr>
+                            <% item.forEach((data, index) => { %>
+                                <% if (index === 0) { %>
+                                    <th><%= data %></th>
+                                <% } else { %>
+                                    <td><%= data %></td>
+                                <% } %>
+                            <% }) %>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<%- include basic/module %>
+<script src="dist/home.js"></script>
+<script>
+    function handleSignIn(googleUser) {
+        let profile = googleUser.getBasicProfile();
+        fetch("http://localhost:4000/auth/google", {
+            body: JSON.stringify(profile),
+            cache: "no-cache",
+            headers: {
+                "user-agent": "Mozilla/4.0 MDN Example",
+                "content-type": "application/json",
+            },
+            method: "POST"
+        }).then((res) => console.log(res))
+            .catch((err) => console.log(err));
+    }
+</script>
+
+</html>
