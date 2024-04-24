@@ -20,8 +20,8 @@ app.post("/auth/google", (req, res) => {
     res.send('Hello');
 })
 
-app.get("/user", (req, res) => {
-    res.sendFile(render("user.html"));
+app.get("/record", (req, res) => {
+    res.sendFile(render("record.html"));
 })
 
 app.listen(4000, function () {

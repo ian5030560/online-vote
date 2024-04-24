@@ -6,21 +6,15 @@ let resultArea = document.getElementById("result-area");
 
 window.onload = () => {
     let table = Table({
-        columns: ["主題", "敘述", "圖片", "日期", "人數"],
+        columns: ["主題", "敘述", "日期", "人數"],
         items: [
-            ["example", "description", "", "2024/12/05 ~ 2024/12/06", "12人"],
-            ["example", "description", "", "2024/12/05 ~ 2024/12/06", "12人"],
+            ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
+            ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
         ].map(item => {
-            return item.map((it, index) => {
-                if(index === 2){
-                    let img = create("img", {attributes: {src: it, alt: ""}});
-                    return img
-                }
-                else{
-                    let div = create("div");
-                    div.innerText = it;
-                    return div;
-                }
+            return item.map((it) => {
+                let div = create("div");
+                div.innerText = it;
+                return div;
             })
         })
     });

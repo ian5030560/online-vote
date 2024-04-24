@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    create: "./static/js/Choice/index.ts",
+    create: "./static/js/Create/index.ts",
     home: "./static/js/Home/index.ts",
-    user: "./static/js/User/index.ts"
+    record: "./static/js/Record/index.ts"
   },
   module: {
     rules: [
