@@ -27,38 +27,14 @@
         <%- include navbar/right/index %>
     <%- include navbar/end %>
     <main class="px-4 py-5">
-        <div class="d-flex">
-            <div class="btn-group me-2" role="group">
-                <input type="radio" class="btn-check" name="format" id="table" autocomplete="off" checked value="table">
-                <label class="btn btn-outline-primary" for="table">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-table" viewBox="0 0 16 16">
-                        <path
-                            d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z" />
-                    </svg>
-                </label>
-
-                <input type="radio" class="btn-check" name="format" id="card" autocomplete="off" value="card">
-                <label class="btn btn-outline-primary" for="card">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-border-all" viewBox="0 0 16 16">
-                        <path d="M0 0h16v16H0zm1 1v6.5h6.5V1zm7.5 0v6.5H15V1zM15 8.5H8.5V15H15zM7.5 15V8.5H1V15z" />
-                    </svg>
-                </label>
-            </div>
-            <div class="input-group w-50">
-                <input type="text" class="form-control" placeholder="搜尋主題..." aria-label="problem"
-                    aria-describedby="problem-button">
-                <button class="btn btn-outline-primary" type="button" id="problem-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-search" viewBox="0 0 16 16">
-                        <path
-                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                    </svg>
-                </button>
-            </div>
+        
+        <div class="input-group w-50">
+            <span class="input-group-text" id="search-label"><i class="bi bi-search"></i></span>
+            <input type="text" id="search" class="form-control" placeholder="搜尋問題" aria-label="search"
+                aria-describedby="search-label" />
         </div>
-        <div class="container pt-3">
+        
+        <div class="container-fluid pt-3">
             <table class="table" id="result">
                 <thead>
                     <tr>
@@ -68,15 +44,62 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% items.forEach(item => { %>
-                        <tr>
-                            <% item.forEach((data, index) => { %>
+                    <% items.forEach((item, index) => { %>
+                        <tr role="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= index %>" aria-expanded="false"
+                        aria-expanded="false" aria-controls="collapse-<%= index %>">
+                            <% item.data.forEach((data, index) => { %>
                                 <% if (index === 0) { %>
-                                    <th><%= data %></th>
+                                    <th data-col-name="<%= cols[index] %>:">
+                                        <span class="card-table-text">
+                                            <%= data %>
+                                        </span>
+                                    </th>
                                 <% } else { %>
-                                    <td><%= data %></td>
+                                    <td data-col-name="<%= cols[index] %>:">
+                                        <span class="card-table-text">
+                                            <%= data %>
+                                        </span>
+                                    </td>
                                 <% } %>
                             <% }) %>
+                            <td>
+                               <a class="btn btn-primary" style="z-index: 1;" href=<%= item.url %>>
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                               </a> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0;" colspan="12">
+                                <ol class="collapse" id="collapse-<%= index %>">
+                                    <% item.options.forEach(data => { %>
+                                        <li>
+                                            <div class="container-fluid">
+                                                <div class="row align-items-center">
+                                                    <div class="col-3">
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="float-start me-3">
+                                                                <img src=<%= data.src %> alt="沒有圖片" width="100"/>
+                                                            </span>
+                                                            <span class="fw-bold text-body-secondary text-break w-100 text-center">
+                                                                <%= data.name %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <div class="progress" role="progressbar" aria-label="prgress-label"
+                                                        aria-valuemin="0" aria-valuemax="100" style="height: 50px;"
+                                                        aria-valuenow=<%= data.value %>>
+                                                            <div class="progress-bar" style="height: 50px;width: <%= data.value / item.number * 100 %>%;">
+                                                                <%= data.value %>人
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    <% }) %>
+                                </ol>
+                            </td>
                         </tr>
                     <% }) %>
                 </tbody>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include basic/head %>
+        <title>線上投票平台</title>
+        <%- include basic/stylesheet %>
+    </head>
+    <style>
+        .option-container{
+            max-height: 300px;
+        }
+    </style>
+    <body>
+        <%- include navbar/start %>
+            <%- include navbar/left/start %>
+            <%- include navbar/left/end %>
+            <%- include navbar/right/index %>
+        <%- include navbar/end %>
+
+        <main class="mt-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-1 text-end">
+                        <span>題目:</span>
+                    </div>
+                    <div class="col-10">
+                        <p class="text-center h1"><%= title %></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-1 text-end">
+                        <span>敘述:</span>
+                    </div>
+                    <div class="col-10">
+                        <p class="text-center"><%= description %></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-1 text-end">
+                        <span>日期:</span>
+                    </div>
+                    <div class="col-10">
+                        <p class="text-center"><%= start %>~<%= end %></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-1 text-end">
+                        可投票數:
+                    </div>
+                    <div class="col-10 text-center">
+                        <p><%= `${enabled}票` %></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-1 text-end">
+                        <span>選項:</span>
+                    </div>
+                    <div class="col-10 border option-container overflow-y-auto">
+                        <ol class="p-5">
+                            <% items.forEach(item => { %>
+                                <li>
+                                    <div class="row">
+                                        <div class="col-1 d-flex justify-content-center align-items-center">
+                                            <div class="btn btn-outline-primary">
+                                                <i class="bi bi-box-arrow-in-down"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 text-center">
+                                            <img class="img-thumbnail" src=<%= item.src %> style="cursor: pointer;" alt="沒有圖片" width="100"/>
+                                        </div>
+                                        <div class="col-3 d-flex justify-content-center align-items-center">
+                                            <p><%= item.name %></p>
+                                        </div>
+                                        <div class="col-6 d-flex align-items-center">
+                                            <p><%= item.content %></p>
+                                        </div>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+    <%- include basic/module %>
+</html>

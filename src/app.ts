@@ -1,5 +1,6 @@
 import express from "express";
 import engine from "ejs-locals";
+import { } from "path";
 
 let app = express();
 
@@ -16,8 +17,24 @@ app.get('/', (req, res) => {
         actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }, { url: "", name: "登出" }],
         cols: ["主題", "敘述", "日期", "人數"],
         items: [
-            ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
-            ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
+            {
+                data: ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
+                options: [{
+                    src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                    name: "example1",
+                    value: 31,
+                }],
+                url: "content/example1"
+            },
+            {
+                data: ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
+                options: [{
+                    src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                    name: "example1",
+                    value: 31,
+                }],
+                url: "content/example2"
+            },
         ]
     });
 })
@@ -34,7 +51,7 @@ app.post("/auth/google", (req, res) => {
     res.send('Hello');
 })
 
-enum STATE{
+enum STATE {
     NOTSTART = "未開始",
     ING = "進行中",
     END = "已結束",
@@ -51,7 +68,7 @@ app.get("/record", (req, res) => {
                 number: 50,
                 items: [
                     {
-                        src: "assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                        src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
                         name: "example1",
                         value: 31,
                     }
@@ -67,7 +84,7 @@ app.get("/record", (req, res) => {
                 number: 50,
                 items: [
                     {
-                        src: "assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                        src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
                         name: "example1",
                         value: 10,
                     }
@@ -75,6 +92,35 @@ app.get("/record", (req, res) => {
                 start: "2024/04/01",
                 end: "2024/04/01",
                 self: true,
+            }
+        ]
+    });
+})
+
+app.get("/content/:id", (req, res) => {
+    res.render("content", {
+        signIn: true,
+        actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }, { url: "", name: "登出" }],
+        title: "Exmaple",
+        description: "something...",
+        start: "2024/05/01",
+        end: "2024/06/01",
+        enabled: 1,
+        items: [
+            {
+                src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                name: "選項一",
+                content: "選項一的敘述..."
+            },
+            {
+                src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                name: "選項一",
+                content: "選項一的敘述..."
+            },
+            {
+                src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
+                name: "選項一",
+                content: "選項一的敘述..."
             }
         ]
     });

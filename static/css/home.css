@@ -14,7 +14,30 @@
     grid-template-columns: repeat(3, 1fr);
 }
 
+.card-table > tbody tr > th{
+    font-size: xx-large;
+}
+
 .card-table > tbody tr > th,
 .card-table > tbody tr > td{
+    display: flex;
     border: none;
+}
+
+.card-table .card-table-text{
+    flex: auto;
+    text-align: center;
+}
+
+.card-table > tbody tr > th::before,
+.card-table > tbody tr > td::before{
+    content: attr(data-col-name);
+}
+
+.table > tbody tr > th{
+    font-size: x-large;
+}
+
+.table > tbody tr{
+    position: relative;
 }
