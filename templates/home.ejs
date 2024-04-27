@@ -2,8 +2,6 @@
 <html lang="en">
     <head>
         <%- include basic/head %>
-        <meta name="google-signin-client_id" content="992109892971-etdq1mq060644jqa7eq39vq29s2huoav.apps.googleusercontent.com">
-        
         <title>線上投票平台</title>
         <%- include basic/stylesheet %>
         <link rel="stylesheet" href="css/home.css" />
@@ -63,9 +61,9 @@
                                 <% } %>
                             <% }) %>
                             <td>
-                               <a class="btn btn-primary" style="z-index: 1;" href=<%= item.url %>>
+                               <button class="btn btn-primary goto" data-href=<%= item.url %>>
                                     <i class="bi bi-box-arrow-in-right"></i>
-                               </a> 
+                               </button> 
                             </td>
                         </tr>
                         <tr>
@@ -107,22 +105,32 @@
         </div>
     </main>
 </body>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="https://accounts.google.com/gsi/client" async></script>
 <%- include basic/module %>
 <script src="dist/home.js"></script>
 <script>
-    function handleSignIn(googleUser) {
-        let profile = googleUser.getBasicProfile();
-        fetch("http://localhost:4000/auth/google", {
-            body: JSON.stringify(profile),
-            cache: "no-cache",
-            headers: {
-                "user-agent": "Mozilla/4.0 MDN Example",
-                "content-type": "application/json",
-            },
-            method: "POST"
-        }).then((res) => console.log(res))
-            .catch((err) => console.log(err));
+    let signIn = document.getElementById('signIn');
+
+    function getResponse(response) {
+        
+        fetch("/auth/google", {
+            method: "POST",
+            body: response.credential,
+        })
+    }
+
+    window.onload = () => {
+        google.accounts.id.initialize({
+            client_id: "992109892971-etdq1mq060644jqa7eq39vq29s2huoav.apps.googleusercontent.com",
+            callback: getResponse,
+        });
+
+        google.accounts.id.renderButton(
+            signIn,
+            { theme: "filled_blue", size: "large", text: "signin_with" },
+        )
+
+        google.accounts.id.prompt();
     }
 </script>
 

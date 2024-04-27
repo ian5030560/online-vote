@@ -1,6 +1,6 @@
 <ul class="navbar-nav flex-row flex-wrap w-25 justify-content-end">
     <% if (!signIn) { %>
-        <li class="g-signin2 navbar-text" onclick="handleSignIn">登入</li>
+        <li id="signIn"></li>
     <% } else { %>
         <% for (let i = 0; i < actions.length; i++) { %>
             <li class="nav-item col-auto px-1">

@@ -1,24 +1,29 @@
 import express from "express";
 import engine from "ejs-locals";
-import { } from "path";
+import auth from "./auth";
+import cors from "cors";
 
 let app = express();
 
 app.engine("ejs", engine);
 app.set("views", "templates");
 app.set("view engine", "ejs");
+
 app.use(express.static("node_modules"));
 app.use(express.static("static"));
-app.use(express.json());
+app.use("/auth", auth);
+app.use(cors());
 
 app.get('/', (req, res) => {
+    console.log(req.headers.authorization);
     res.render("home", {
-        signIn: true,
+        signIn: false,
         actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }, { url: "", name: "登出" }],
         cols: ["主題", "敘述", "日期", "人數"],
         items: [
             {
-                data: ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
+                data: ["example", "description", "2024/12/05 ~ 2024/12/06", "40人"],
+                number: 40,
                 options: [{
                     src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
                     name: "example1",
@@ -27,7 +32,8 @@ app.get('/', (req, res) => {
                 url: "content/example1"
             },
             {
-                data: ["example", "description", "2024/12/05 ~ 2024/12/06", "12人"],
+                data: ["example", "description", "2024/12/05 ~ 2024/12/06", "50人"],
+                number: 50,
                 options: [{
                     src: "/assets/437570580_1470748313790701_4345547566074917697_n.jpg",
                     name: "example1",
@@ -44,11 +50,6 @@ app.get("/create", (req, res) => {
         signIn: true,
         actions: [{ url: "record", name: "我的紀錄" }, { url: "", name: "登出" }],
     });
-})
-
-app.post("/auth/google", (req, res) => {
-    console.log(req.body);
-    res.send('Hello');
 })
 
 enum STATE {

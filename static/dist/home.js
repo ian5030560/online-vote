@@ -16,7 +16,7 @@
   \*********************************/
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-eval("\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nconst ui_1 = __webpack_require__(/*! ../ui */ \"./static/js/ui.ts\");\nconst utils_1 = __webpack_require__(/*! ../utils */ \"./static/js/utils.ts\");\nlet table = document.getElementById(\"result\");\nwindow.onload = () => {\n    (0, utils_1.radioListener)(\"format\", [\"table\", \"card\"], (e) => {\n        let value = e.target.value;\n        if (value !== \"table\") {\n            table.classList.add(\"card-table\");\n        }\n        else {\n            table.classList.remove(\"card-table\");\n        }\n    });\n    let theme = (0, ui_1.ThemeButton)({ mode: \"light\" });\n    theme[0].classList.add(\"m-5\");\n    document.body.appendChild(theme[0]);\n};\n\n\n//# sourceURL=webpack://vote-system/./static/js/Home/index.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", ({ value: true }));\nconst ui_1 = __webpack_require__(/*! ../ui */ \"./static/js/ui.ts\");\nwindow.onload = () => {\n    let buttons = document.getElementsByClassName(\"goto\");\n    for (let button of buttons) {\n        button.addEventListener(\"click\", (e) => {\n            window.location.href = button.getAttribute(\"data-href\");\n        });\n    }\n    let theme = (0, ui_1.ThemeButton)({ mode: \"light\" });\n    theme[0].classList.add(\"m-5\");\n    document.body.appendChild(theme[0]);\n};\n\n\n//# sourceURL=webpack://vote-system/./static/js/Home/index.ts?");
 
 /***/ }),
 
