@@ -1,16 +1,19 @@
 <ul class="navbar-nav flex-row flex-wrap w-25 justify-content-end">
     <% if (!signIn) { %>
-        <li id="signIn"></li>
+        <li><a class="btn btn-primary" href="/auth"><i class="bi bi-google me-3"></i>登入</a></li>
     <% } else { %>
         <% for (let i = 0; i < actions.length; i++) { %>
             <li class="nav-item col-auto px-1">
                 <a class="nav-link user-nav px-2 rounded-1" href=<%= actions[i].url %>><%= actions[i].name %></a>
             </li>
-            <% if (i < actions.length - 1) { %>
-                <li class="nav-item col-auto px-1">
-                    <div class="vr h-100"></div>
-                </li>
-            <% } %>
+            <li class="nav-item col-auto px-1">
+                <div class="vr h-100"></div>
+            </li>
         <% } %>
+        <li>
+            <li class="nav-item col-auto px-1">
+                <a class="nav-link user-nav px-2 rounded-1" href="auth/signout">登出</a>
+            </li>
+        </li>
     <% } %>
 </ul>

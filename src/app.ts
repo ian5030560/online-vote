@@ -1,7 +1,10 @@
-import express from "express";
+import { config } from "dotenv";
+config();
+import express, { Request, Response } from "express";
 import engine from "ejs-locals";
-import auth from "./auth";
+import auth, { authMiddleware, isSignIn } from "./auth";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 let app = express();
 
@@ -11,14 +14,21 @@ app.set("view engine", "ejs");
 
 app.use(express.static("node_modules"));
 app.use(express.static("static"));
+app.use(cookieParser());
 app.use("/auth", auth);
 app.use(cors());
 
-app.get('/', (req, res) => {
-    console.log(req.headers.authorization);
+app.get('/', async (req, res) => {
+    let signIn: boolean | undefined;
+    try{
+        signIn = await isSignIn(req, res);
+    }
+    catch (err) {
+        return res.sendStatus(401);
+    }
     res.render("home", {
-        signIn: false,
-        actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }, { url: "", name: "登出" }],
+        signIn: signIn,
+        actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }],
         cols: ["主題", "敘述", "日期", "人數"],
         items: [
             {
@@ -45,10 +55,10 @@ app.get('/', (req, res) => {
     });
 })
 
-app.get("/create", (req, res) => {
+app.get("/create", authMiddleware, (req, res) => {
     res.render("create", {
         signIn: true,
-        actions: [{ url: "record", name: "我的紀錄" }, { url: "", name: "登出" }],
+        actions: [{ url: "record", name: "我的紀錄" }],
     });
 })
 
@@ -57,10 +67,10 @@ enum STATE {
     ING = "進行中",
     END = "已結束",
 }
-app.get("/record", (req, res) => {
+app.get("/record", authMiddleware, (req, res) => {
     res.render("record", {
         signIn: true,
-        actions: [{ url: "create", name: "創建投票" }, { url: "", name: "登出" }],
+        actions: [{ url: "create", name: "創建投票" }],
         items: [
             {
                 title: "Example1",
@@ -98,7 +108,7 @@ app.get("/record", (req, res) => {
     });
 })
 
-app.get("/content/:id", (req, res) => {
+app.get("/content/:id", authMiddleware, (req, res) => {
     res.render("content", {
         signIn: true,
         actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }, { url: "", name: "登出" }],
