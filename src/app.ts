@@ -1,10 +1,12 @@
 import { config } from "dotenv";
 config();
-import express, { Request, Response } from "express";
+import express from "express";
 import engine from "ejs-locals";
 import auth, { authMiddleware, isSignIn } from "./auth";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { initDB } from "./model";
+import create from "./create";
 
 let app = express();
 
@@ -16,17 +18,20 @@ app.use(express.static("node_modules"));
 app.use(express.static("static"));
 app.use(cookieParser());
 app.use("/auth", auth);
+app.use("/create", create);
 app.use(cors());
 
 app.get('/', async (req, res) => {
     let signIn: boolean | undefined;
-    try{
+
+    try {
         signIn = await isSignIn(req, res);
-    }
+    } 
     catch (err) {
         return res.sendStatus(401);
     }
-    res.render("home", {
+    return res.render("home", {
+        dark: false,
         signIn: signIn,
         actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }],
         cols: ["主題", "敘述", "日期", "人數"],
@@ -55,13 +60,6 @@ app.get('/', async (req, res) => {
     });
 })
 
-app.get("/create", authMiddleware, (req, res) => {
-    res.render("create", {
-        signIn: true,
-        actions: [{ url: "record", name: "我的紀錄" }],
-    });
-})
-
 enum STATE {
     NOTSTART = "未開始",
     ING = "進行中",
@@ -69,6 +67,7 @@ enum STATE {
 }
 app.get("/record", authMiddleware, (req, res) => {
     res.render("record", {
+        dark: false,
         signIn: true,
         actions: [{ url: "create", name: "創建投票" }],
         items: [
@@ -110,8 +109,9 @@ app.get("/record", authMiddleware, (req, res) => {
 
 app.get("/content/:id", authMiddleware, (req, res) => {
     res.render("content", {
+        dark: false,
         signIn: true,
-        actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }, { url: "", name: "登出" }],
+        actions: [{ url: "/record", name: "我的紀錄" }, { url: "/create", name: "創建投票" }],
         title: "Exmaple",
         description: "something...",
         start: "2024/05/01",
@@ -137,6 +137,8 @@ app.get("/content/:id", authMiddleware, (req, res) => {
     });
 })
 
+
 app.listen(4000, function () {
-    console.log('Example app listening on port 4000!')
+    initDB();
+    console.log('Example app listening on port 4000!');
 })

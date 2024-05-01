@@ -8,17 +8,6 @@
     <link rel="stylesheet" href="css/create.css" />
 </head>
 
-<style>
-    .descript {
-        resize: none;
-    }
-
-    .choice-container {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-</style>
-
 <body>
 
     <%- include navbar/start %>
@@ -29,11 +18,11 @@
     
     <main>
         <div class="container justify-content-center align-items-center">
-            <form class="p-5">
+            <form class="p-5 needs-validation" action="/create" method="post" novalidate id="vote-form">
                 <div class="row mb-3">
                     <label class="col-form-label col-1" for="problem">題目:</label>
-                    <div class="col-11">
-                        <input class="form-control" type="text" id="problem" name="problem" />
+                    <div class="col-11 position-relative">
+                        <input class="form-control" type="text" id="problem" name="problem" required/>
                     </div>
                 </div>
 
@@ -44,10 +33,10 @@
                     </div>
                 </div>
 
-                <div class="container-fluid px-3 choice-container mb-3 border p-1">
-                    <ol id="choice-container"></ol>
+                <div class="container-fluid px-3 option-frame mb-3 border p-1">
+                    <ol id="option-container"></ol>
                     <div class="btn btn-outline-primary sticky-bottom d-flex align-items-center justify-content-center"
-                        type="button" id="choice-add">
+                        type="button" id="option-add">
                         <i class="bi bi-plus-circle"></i>
                         <span class="mx-1">
                             增加選項
@@ -73,7 +62,7 @@
                                 <label for="ticket-number">數量:</label>
                             </div>
                             <div class="col-9">
-                                <input class="form-control" type="number" name="ticket-number" id="ticket-number" />
+                                <input class="form-control" type="number" name="ticket-number" id="ticket-number" min="2"/>
                             </div>
                         </div>
                     </div>
@@ -84,9 +73,13 @@
                     <span class="col-1">日期:</span>
                     <div class="col-11">
                         <div class="input-group">
-                            <input type="date" class="form-control" placeholder="開始" aria-label="start">
+                            <% function getNowDate(){
+                                let dateObj = new Date();
+                                return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toFixed(0).padStart(2, "0")}-${dateObj.getDate().toFixed(0).padStart(2, "0")}`
+                            } %>
+                            <input name="start" type="date" class="form-control" placeholder="開始" aria-label="start" required min=<%= getNowDate() %>>
                             <span class="input-group-text">~</span>
-                            <input type="date" class="form-control" placeholder="結束" aria-label="end">
+                            <input name="end" type="date" class="form-control" placeholder="結束" aria-label="end" required min=<%= getNowDate() %>>
                         </div>
                     </div>
                 </div>
@@ -99,6 +92,13 @@
         </div>
     </main>
 
+    <% if (success) { %>
+        <div class="alert alert-success alert-dismissable nofity animate__fadeInDown" role="alert">
+            <strong class="me-3">創建成功!!!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+    <%- include basic/switch %>
 </body>
 <%- include basic/module %>
 <script src="dist/create.js" type="module"></script>

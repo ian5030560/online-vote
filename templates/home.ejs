@@ -104,34 +104,9 @@
             </table>
         </div>
     </main>
+
+    <% include basic/switch %>
 </body>
-<!-- <script src="https://accounts.google.com/gsi/client" async></script> -->
 <%- include basic/module %>
-<script src="dist/home.js"></script>
-<!-- <script>
-    let signIn = document.getElementById('signIn');
-
-    function getResponse(response) {
-        
-        fetch("/auth/google", {
-            method: "POST",
-            body: response.credential,
-        })
-    }
-
-    window.onload = () => {
-        google.accounts.id.initialize({
-            client_id: "992109892971-etdq1mq060644jqa7eq39vq29s2huoav.apps.googleusercontent.com",
-            callback: getResponse,
-        });
-
-        google.accounts.id.renderButton(
-            signIn,
-            { theme: "filled_blue", size: "large", text: "signin_with" },
-        )
-
-        google.accounts.id.prompt();
-    }
-</script> -->
-
+<script src="dist/home.js" type="module"></script>
 </html>

@@ -5,7 +5,7 @@
   "main": "src/app.ts",
   "scripts": {
     "start": "nodemon src/app.ts",
-    "build": "webpack --mode development",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run build && npm run start"
   },
@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bootstrap": "^5.2.10",
+    "animate.css": "^4.1.1",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.2",

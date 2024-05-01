@@ -5,16 +5,8 @@
     <%- include basic/head %>
     <title>線上投票平台</title>
     <%- include basic/stylesheet %>
+    <link rel="stylesheet" href="css/record.css"/>
 </head>
-<style>
-    .box {
-        min-height: 300px;
-    }
-
-    .box-item {
-        max-height: 500px;
-    }
-</style>
 
 <body>
     <%- include navbar/start %>
@@ -120,6 +112,7 @@
             </div>
         </div>
     </div>
+    <% include basic/switch %>
 </body>
 <%- include basic/module %>
 <script src="dist/record.js"></script>

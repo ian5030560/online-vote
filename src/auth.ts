@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import { google } from "googleapis";
 import { OAuth2Client } from "googleapis-common";
 import { env } from "process";
-import { User } from "./db";
+import User from "./model/user";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
 let auth = Router();
@@ -106,3 +106,16 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 }
 
 export default auth;
+
+
+export function parseJwtToId(token: any){
+    let decoded: JwtPayload;
+    try{
+        decoded = jwt.verify(token, env.JWT_SECRET!) as JwtPayload;
+    }
+    catch(err){
+        throw err;
+    }
+
+    return decoded.id;
+}

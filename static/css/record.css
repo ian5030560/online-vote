@@ -1,0 +1,7 @@
+.box {
+    min-height: 300px;
+}
+
+.box-item {
+    max-height: 500px;
+}

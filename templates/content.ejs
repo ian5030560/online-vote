@@ -4,12 +4,9 @@
         <%- include basic/head %>
         <title>線上投票平台</title>
         <%- include basic/stylesheet %>
+        <link rel="stylesheet" href="css/content.css"/>
     </head>
-    <style>
-        .option-container{
-            max-height: 300px;
-        }
-    </style>
+
     <body>
         <%- include navbar/start %>
             <%- include navbar/left/start %>
@@ -82,6 +79,7 @@
                 </div>
             </div>
         </main>
+        <% include basic/switch %>
     </body>
     <%- include basic/module %>
 </html>
