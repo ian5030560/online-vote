@@ -95,7 +95,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     try{
         if(!isSignIn(req, res)){
             res.clearCookie("token");
-            return res.redirect("/");
+            return res.redirect("/?state=進行中");
         }
     }
     catch(err){

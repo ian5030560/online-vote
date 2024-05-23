@@ -12,13 +12,13 @@
         <%- include navbar/left/start %>
             <ul class="nav nav-pills">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">進行中</a>
+                    <a class="nav-link<%- state=='進行中' ? ' active' : '' %>" aria-current="page" href="/?state=進行中">進行中</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">未開始</a>
+                    <a class="nav-link<%- state=='未開始' ? ' active' : '' %>" href="/?state=未開始">未開始</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">已結束</a>
+                    <a class="nav-link<%- state=='已結束' ? ' active' : '' %>" href="/?state=已結束">已結束</a>
                 </li>
             </ul>
         <%- include navbar/left/end %>
@@ -44,50 +44,53 @@
                 <tbody>
                     <% items.forEach((item, index) => { %>
                         <tr role="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= index %>" aria-expanded="false"
-                        aria-expanded="false" aria-controls="collapse-<%= index %>">
+                        aria-expanded="false" aria-controls="collapse-<%= index %>" data-vote-title=<%- item.data[0] %>>
                             <% item.data.forEach((data, index) => { %>
                                 <% if (index === 0) { %>
-                                    <th data-col-name="<%= cols[index] %>:">
-                                        <span class="card-table-text">
-                                            <%= data %>
-                                        </span>
+                                    <th class="align-middle" data-col-name="<%= cols[index] %>:">
+                                        <span class="h4"><%= data %></span>
                                     </th>
                                 <% } else { %>
-                                    <td data-col-name="<%= cols[index] %>:">
+                                    <td class="align-middle" data-col-name="<%= cols[index] %>:">
                                         <span class="card-table-text">
                                             <%= data %>
                                         </span>
                                     </td>
                                 <% } %>
                             <% }) %>
-                            <td>
+                            <td class="text-end">
                                <button class="btn btn-primary goto" data-href=<%= item.url %>>
                                     <i class="bi bi-box-arrow-in-right"></i>
                                </button> 
                             </td>
                         </tr>
                         <tr>
-                            <td style="padding: 0;" colspan="12">
-                                <ol class="collapse" id="collapse-<%= index %>">
+                            <td class="p-0" colspan="12">
+                                <ol class="collapse m-1" id="collapse-<%= index %>">
                                     <% item.options.forEach(data => { %>
-                                        <li>
+                                        <li class="py-2">
                                             <div class="container-fluid">
                                                 <div class="row align-items-center">
                                                     <div class="col-3">
                                                         <div class="d-flex align-items-center">
                                                             <span class="float-start me-3">
-                                                                <img src=<%= data.src %> alt="沒有圖片" width="100"/>
+                                                                <img src=<%= data.src %> alt="沒有圖片" width="50"/>
                                                             </span>
-                                                            <span class="fw-bold text-body-secondary text-break w-100 text-center">
+                                                            <span class="h5 fw-bold text-body-secondary text-break w-100 text-center">
                                                                 <%= data.name %>
                                                             </span>
                                                         </div>
                                                     </div>
+                                                    <% function divide(divided, divider){
+                                                        if(divided === 0 && divider === 0) return 0;
+                                                        return divided / divider
+                                                    } %>
                                                     <div class="col-9">
-                                                        <div class="progress" role="progressbar" aria-label="prgress-label"
-                                                        aria-valuemin="0" aria-valuemax="100" style="height: 50px;"
-                                                        aria-valuenow=<%= data.value %>>
-                                                            <div class="progress-bar" style="height: 50px;width: <%= data.value / item.number * 100 %>%;">
+                                                        <div class="progress position-relative" role="progressbar" aria-label="prgress-label"
+                                                        aria-valuemin="0" aria-valuemax="100" style="height: 20px;"
+                                                        aria-valuenow=<%= divide(data.value, item.number) %>>
+                                                            <div class="progress-bar" style="width: <%= divide(data.value, item.number) * 100 %>%;"></div>
+                                                            <div class="progress-label">
                                                                 <%= data.value %>人
                                                             </div>
                                                         </div>
@@ -105,7 +108,6 @@
         </div>
     </main>
 
-    <% include basic/switch %>
 </body>
 <%- include basic/module %>
 <script src="dist/home.js" type="module"></script>

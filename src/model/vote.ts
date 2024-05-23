@@ -1,11 +1,11 @@
 import { CreationOptional, DataTypes } from "sequelize";
 import sequelize, { Model } from ".";
-import User from "./user";
+import User from "./user";;
 
-interface VoteModal extends Model<VoteModal>{
+export interface VoteModal extends Model<VoteModal> {
     title: string;
     description: CreationOptional<string>;
-    number: CreationOptional<number>;
+    limit: CreationOptional<number>;
     start: Date;
     end: Date;
     id: string;
@@ -22,7 +22,7 @@ const Vote = sequelize.define<VoteModal>(
         description: {
             type: DataTypes.TEXT("medium"),
         },
-        number: {
+        limit: {
             type: DataTypes.INTEGER,
             defaultValue: 1,
         },
@@ -35,7 +35,7 @@ const Vote = sequelize.define<VoteModal>(
             allowNull: false,
         },
         id: {
-            type: DataTypes.UUID,
+            type: DataTypes.CHAR(128),
             primaryKey: true,
         },
         user: {
@@ -48,8 +48,8 @@ const Vote = sequelize.define<VoteModal>(
     },
     {
         tableName: "vote",
-        timestamps: false, 
+        timestamps: false,
     }
-) 
+)
 
 export default Vote;

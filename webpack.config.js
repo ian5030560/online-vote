@@ -43,4 +43,9 @@ module.exports = {
   },
 
   cache: true,
+  devServer: {
+    port: 4001,
+    hot: true,
+    static: "static/js"
+  }
 };

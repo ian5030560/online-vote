@@ -1,5 +1,5 @@
 import { Modal } from "bootstrap";
-import loadSwitch from "./utils/switch";
+import switchTheme from "./ui/switch";
 
 let box = document.getElementById("box");
 let search = document.getElementById("search");
@@ -32,6 +32,6 @@ window.onload = () => {
             boxItem?.remove();
         }, {once: true});
     })
-
-    loadSwitch();
+ 
+    switchTheme();
 }

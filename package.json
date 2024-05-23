@@ -1,13 +1,13 @@
 {
-  "name": "vote-system",
+  "name": "online-vote",
   "version": "1.0.0",
   "description": "",
   "main": "src/app.ts",
   "scripts": {
     "start": "nodemon src/app.ts",
-    "build": "webpack",
+    "build": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run build && npm run start"
+    "serve": "webpack serve"
   },
   "keywords": [],
   "author": "",
@@ -25,8 +25,10 @@
     "ejs-locals": "^1.0.2",
     "express": "^4.19.2",
     "googleapis": "^135.0.0",
+    "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.3.0",
+    "multer": "^1.4.5-lts.1",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
@@ -34,13 +36,16 @@
     "@types/cors": "^2.8.17",
     "@types/ejs-locals": "^0.0.35",
     "@types/express": "^4.17.21",
+    "@types/jquery": "^3.5.30",
     "@types/jsonwebtoken": "^9.0.6",
+    "@types/multer": "^1.4.11",
     "@types/node": "^20.12.7",
     "nodemon": "^3.1.0",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
   }
 }

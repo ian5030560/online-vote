@@ -1,56 +1,65 @@
-import { html, randomId, ref } from "../utils";
+import { Component } from "../utils/framewrok";
+import { randomId } from "../utils";
+import $ from "jquery";
 
-interface OptionPayload {
-    onRemove: () => void;
-}
-
-export default function Option(payload: OptionPayload) {
-
-    let img = ref("img");
-    let file = ref("input");
-    let button = ref("button");
-    let option = ref("li");
-
-    img.on("click", () => (file.instance as HTMLInputElement).click());
-    file.on("change", () => {
-        let files = (file.instance as HTMLInputElement).files;
-        if (!files) return;
-        let url = URL.createObjectURL(files[0]);
-        (img.instance as HTMLImageElement).src = url;
-    });
-
-    button.on("click", () => {
-        option.instance.remove();
-        payload.onRemove();
-    });
+export default function Option(onRemove: () => void): Component {
 
     let nameId = randomId(5);
     let descriptId = randomId(5);
 
-    return html(img, file, button, option)
-    `${option.bind(`<li class='mb-3'>
-        <div class='row align-items-center'>
-            <div class='col-2 text-center'>
-                ${img.bind("<img class='img-thumbnail' alt='上傳圖片' style='cursor: pointer;'/>")}
-                ${file.bind("<input type='file' class='d-none' name='option-images' aria-label='option-image'/>")}
-            </div>
-            <div class='col-3'>
-                <div class='form-floating'>
-                    <input class='form-control' id='${nameId}' name='option-names' placeholder=' ' require/>
-                    <label for='${nameId}'>選項名稱</label>
+    return {
+        dom: (dom) => {
+            let li = $(dom).find("li");
+            let file = $(dom).find("input[type='file']");
+            let upload = $(dom).find("div.btn");
+            let image = $(dom).find("img");
+            let button = $(dom).find("button.btn");
+            
+            upload.on("click", () => file.trigger("click"))
+            
+            file.on("change", (e) => {
+                let files = (e.target as HTMLInputElement).files;
+                if(!files) return;
+
+                let url = URL.createObjectURL(files[0]);
+                image.attr({src: url}).removeClass("d-none");
+                upload.addClass("d-none");
+                file.next().val(files[0].name);
+            });
+
+            button.on("click", () => {
+                li.remove();
+                onRemove();
+            })
+        },
+        render: `<li>
+                <div class='container-fluid p-3'>
+                    <div class='row align-items-center'>
+                    <div class='col-2 text-center'>
+                        <div class='btn btn-outline-primary'><i class="bi bi-upload"></i>上傳圖片</div>
+                        <img class='img-thumbnail d-none' alt='' style='cursor: pointer;'/>
+                        <input type='file' class='d-none' name='option-images' aria-label='option-image' value=''/>
+                        <input type='hidden' name='option-image-names' aria-label='option-image-name' value=''/>
+                    </div>
+                    <div class='col-3'>
+                        <div class='form-floating'>
+                            <input class='form-control' id='${nameId}' name='option-names' placeholder=' ' require/>
+                            <label for='${nameId}'>選項名稱</label>
+                        </div>
+                    </div>
+                    <div class='col-6'>
+                        <div class='form-floating'>
+                            <textarea class='form-control me-3' name='option-descripts' placeholder=' ' id='${descriptId}' required/></textarea>
+                            <label for='${descriptId}'>敘述</label>
+                        </div>  
+                    </div>
+                    <div class='col-1'>
+                        <button class='btn btn-outline-danger pb-2' type='button'>
+                            <i class='bi bi-trash3'></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class='col-6'>
-                <div class='form-floating'>
-                    <textarea class='form-control me-3' name='option-descripts' placeholder=' ' id='${descriptId}' required/></textarea>
-                    <label for='${descriptId}'>敘述</label>
-                </div>  
-            </div>
-            <div class='col-1'>
-                ${button.bind(`<button class='btn btn-outline-danger pb-2' type='button'>
-                    <i class='bi bi-trash3'></i>
-                </button>`)}
-            </div>
-        </div>
-    </li>`)}`
+                </div>
+            </li>`
+    }
 }

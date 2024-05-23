@@ -1,6 +1,7 @@
-import loadSwitch from "./utils/switch";
-import { radioListener } from "./utils";
+import { html } from "./utils/framewrok";
 import Option from "./ui/option";
+import { radioListener } from "./utils";
+import switchTheme from "./ui/switch";
 
 let ticketNumberContainer = document.getElementById("ticket-number-container");
 let optionContainer = document.getElementById("option-container");
@@ -23,45 +24,39 @@ window.onload = () => {
     if (ticketNumber) {
       (ticketNumber as HTMLInputElement).required = target.value === "multiple";
     }
-  }); 
+  });
 
   voteForm?.addEventListener('submit', event => {
     let hasOption = optionContainer?.hasChildNodes();
     if (!(voteForm as HTMLFormElement).checkValidity() || !hasOption) {
-      event.preventDefault()
-      event.stopPropagation()
+      event.preventDefault();
+      event.stopPropagation();
       optionFrame?.classList.add("border-danger");
-    }
-    else {
-      
     }
     voteForm.classList.add('was-validated');
 
   }, false)
 
 
-  function handleChange(){
-    if(voteForm?.classList.contains("was-validated")){
-      if(optionContainer?.hasChildNodes()){
+  function handleChange() {
+    if (voteForm?.classList.contains("was-validated")) {
+      if (optionContainer?.hasChildNodes()) {
         optionFrame?.classList.remove("border-danger");
         optionFrame?.classList.add("border-success");
       }
-      else{
+      else {
         optionFrame?.classList.add("border-danger");
         optionFrame?.classList.remove("border-success");
       }
     }
-    let ticketNumber = ticketNumberContainer?.querySelector("[name='ticket-number']") as HTMLInputElement; 
+    let ticketNumber = ticketNumberContainer?.querySelector("[name='ticket-number']") as HTMLInputElement;
     ticketNumber.max = optionContainer!.childElementCount + "";
   }
 
   optionAdd?.addEventListener("click", () => {
-    optionContainer?.appendChild(Option({
-      onRemove: handleChange
-    }));
-
+    optionContainer?.appendChild(html(Option(handleChange)));
     handleChange();
   });
 
-  loadSwitch();
+  switchTheme();
 }

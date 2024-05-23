@@ -18,7 +18,7 @@
     
     <main>
         <div class="container justify-content-center align-items-center">
-            <form class="p-5 needs-validation" action="/create" method="post" novalidate id="vote-form">
+            <form class="p-5 needs-validation" novalidate id="vote-form" action="/create" method="post" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <label class="col-form-label col-1" for="problem">題目:</label>
                     <div class="col-11 position-relative">
@@ -46,7 +46,7 @@
 
                 <div class="row mb-3">
                     <span class="col-1">票數:</span>
-                    <div class="col-11">
+                    <div class="col-11 d-flex">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="ticket" id="single" checked
                                 value="single">
@@ -57,13 +57,9 @@
                             <label class="form-check-label" for="multiple">多選</label>
                         </div>
 
-                        <div class="row d-inline-flex invisible" id="ticket-number-container">
-                            <div class="col-3 text-end">
-                                <label for="ticket-number">數量:</label>
-                            </div>
-                            <div class="col-9">
-                                <input class="form-control" type="number" name="ticket-number" id="ticket-number" min="2"/>
-                            </div>
+                        <div class="invisible d-inline-flex flex-fill" id="ticket-number-container">
+                            <label for="ticket-number" style="flex: 1" class="text-center">數量:</label>
+                            <input class="form-control" style="flex: 9" type="number" name="ticket-number" id="ticket-number" min="1"/>
                         </div>
                     </div>
                 </div>
@@ -77,9 +73,9 @@
                                 let dateObj = new Date();
                                 return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toFixed(0).padStart(2, "0")}-${dateObj.getDate().toFixed(0).padStart(2, "0")}`
                             } %>
-                            <input name="start" type="date" class="form-control" placeholder="開始" aria-label="start" required min=<%= getNowDate() %>>
+                            <input name="start" type="date" class="form-control" placeholder="開始" aria-label="start" value=<%= getNowDate() %> required min=<%= getNowDate() %>>
                             <span class="input-group-text">~</span>
-                            <input name="end" type="date" class="form-control" placeholder="結束" aria-label="end" required min=<%= getNowDate() %>>
+                            <input name="end" type="date" class="form-control" placeholder="結束" aria-label="end" required value=<%= getNowDate() %> min=<%= getNowDate() %>>
                         </div>
                     </div>
                 </div>
@@ -91,14 +87,13 @@
             </form>
         </div>
     </main>
-
     <% if (success) { %>
-        <div class="alert alert-success alert-dismissable nofity animate__fadeInDown" role="alert">
+        <div class="alert alert-success alert-dismissable nofity translate-middle-x" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
             <strong class="me-3">創建成功!!!</strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <% } %>
-    <%- include basic/switch %>
 </body>
 <%- include basic/module %>
 <script src="dist/create.js" type="module"></script>
