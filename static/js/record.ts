@@ -30,8 +30,9 @@ window.onload = () => {
         let okButton = closeModal.querySelector(".modal-footer [data-bs-value=\"ok\"]");
         okButton?.addEventListener("click", () => {
             boxItem?.remove();
+            console.log()
         }, {once: true});
     })
- 
+
     switchTheme();
 }

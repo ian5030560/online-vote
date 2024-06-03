@@ -46,11 +46,24 @@
                     </div>
                     <div class="col-12 border option-container overflow-y-auto">
                         <ol class="p-3">
+                            <%
+                                function over(end) {
+                                    let time = Date.parse(end.replace("/", "-"));
+                                    return time < Date.now();
+                                }
+
+                                function before(start){
+                                    let time = Date.parse(start.replace("/", "-"));
+                                    return time > Date.now();
+                                }
+                            %>
                             <% items.forEach(item => { %>
                                 <li class="mb-3 container-fluid">
                                     <div class="row" data-option-id=<%= item.id %>>
                                         <div class="col-1 d-flex justify-content-center align-items-center">
-                                            <div class="btn <%- item.isVoted ? "btn-primary" : "btn-outline-primary" %>" data-is-voted=<%= item.isVoted %>>
+                                            <div role="button" aria-disabled=<%- !user || over(end) || before(start) %>
+                                                class="btn <%- item.isVoted ? "btn-primary" : "btn-outline-primary" %> <%- !user || over(end) || before(start) ? "disabled" : "" %>" 
+                                                data-is-voted=<%= item.isVoted %>>
                                                 <i class="bi bi-box-arrow-in-down"></i>
                                             </div>
                                         </div>
@@ -74,10 +87,10 @@
                                                             return divided / divider
                                                         } %>
                                                         <div class="progress position-relative" role="progressbar"
-                                                            aria-label="vote-number" aria-valuenow=<%= divide(item.value, number) * 100 %> 
-                                                            aria-valuemin="0" aria-valuemax="100" style="height: 25px;">
+                                                            aria-label="vote-number" aria-valuenow=<%= item.value %> 
+                                                            aria-valuemin="0" aria-valuemax=<%= number %> style="height: 25px;">
                                                             <div class="progress-bar" style="width: <%= divide(item.value, number) * 100 %>%"></div>
-                                                            <div class="progress-label"><%= item.value %>人</div>
+                                                            <div class="position-absolute top-50 start-50 translate-middle"><%= item.value %>人</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -91,7 +104,29 @@
                 </div>
             </div>
         </main>
+        <div class="toast-container position-fixed bottom-0 end-0 m-3">
+            <div id="success" class="toast text-bg-success rounded" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body">
+                    <div class="d-flex justify-content-between">
+                        <span>儲存成功</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 end-0 m-3">
+            <div id="fail" class="toast text-bg-danger rounded" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-body">
+                    <div class="d-flex justify-content-between">
+                        <span>儲存失敗</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
+    <div class="d-none" data-user-token=<%= user %> id="token"></div>
     <%- include basic/module %>
     <script src="/dist/content.js" type="module"></script>
 </html>

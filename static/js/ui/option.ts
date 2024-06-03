@@ -1,11 +1,11 @@
 import { Component } from "../utils/framewrok";
-import { randomId } from "../utils";
+import { uuid } from "../utils";
 import $ from "jquery";
 
 export default function Option(onRemove: () => void): Component {
 
-    let nameId = randomId(5);
-    let descriptId = randomId(5);
+    let nameId = uuid();
+    let descriptId = uuid();
 
     return {
         dom: (dom) => {

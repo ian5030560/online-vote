@@ -7,10 +7,3 @@
     height: fit-content;
     padding: 5px;
 }
-
-.progress-label{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}

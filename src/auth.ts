@@ -5,7 +5,7 @@ import { env } from "process";
 import User from "./model/user";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
-let auth = Router();
+export const auth = Router();
 
 function getAuthClient() {
     return new google.auth.OAuth2(
@@ -104,8 +104,6 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
     return next();
 }
-
-export default auth;
 
 
 export function parseJwtToId(token: any){

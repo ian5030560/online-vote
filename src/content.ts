@@ -4,7 +4,12 @@ import Vote from "./model/vote";
 import Option from "./model/option";
 import express from "express";
 import Record from "./model/record";
+import User from "./model/user";
+import { formatDate } from "./utils";
 
+function over(end: Date){
+    return Date.parse(end.toString()) < Date.now();
+}
 async function getVoteContent(creator: string, id: string, user?: string){
     const vote = await Vote.findOne({where: {user: creator, id: id}});
     if(!vote) return null;
@@ -14,9 +19,9 @@ async function getVoteContent(creator: string, id: string, user?: string){
     let content = {
         title: vote.title,
         description: vote.description,
-        start: vote.start.toString().split("-").join("/"),
-        end: vote.end.toString().split("-").join("/"),
-        enabled: vote.limit - votes.length,
+        start: formatDate(vote.start),
+        end: formatDate(vote.end),
+        enabled: !over(vote.end) ? vote.limit - votes.length : 0,
         number: 0,
         items: [] as {id: string, src: string, name: string, content: string, value: number, isVoted: boolean}[],
     }
@@ -37,23 +42,27 @@ async function getVoteContent(creator: string, id: string, user?: string){
     return content;
 }
 export const content = Router();
-content.get("/:creator/:id", authMiddleware, async (req, res) => {
+content.get("/:creator/:id", async (req, res) => {
     const {creator, id} = req.params;
     if(!(creator && id)) return res.sendStatus(404);
     
-    const {user} = req.cookies["token"];
-
-    let content = await getVoteContent(creator as string, id as string, user);
+    const token = req.cookies["token"];
+    let user: string | undefined;
+    let content: any;
+  
+    user = token ? (await User.findByPk(parseJwtToId(token)))!.id: undefined;
+    content = await getVoteContent(creator as string, id as string, user);
     if(!content) return res.sendStatus(404);
-
+    
     return res.render("content", {
-        signIn: true,
+        signIn: !(token === undefined || token === null),
+        user: user,
         actions: [{ url: "/record", name: "我的紀錄" }, { url: "/create", name: "創建投票" }],
         ...content,
     });
 })
 
-content.post("/vote", express.json(), (req, res) => {
+content.post("/vote", express.json(), async (req, res) => {
     let id: string;
     try{
         id = parseJwtToId(req.cookies["token"]);
@@ -62,6 +71,21 @@ content.post("/vote", express.json(), (req, res) => {
         return res.sendStatus(403);
     }
     const data = req.body;
-    console.log(data);
+    
+    let inserted = {
+        creator: data.creator,
+        user: data.voter,
+        vote: data.vote,
+        option: data.option,   
+    };
+
+    console.log(inserted); 
+    try{
+        await data.state ? Record.create(inserted): Record.destroy({where: inserted});
+    }
+    catch(e){
+        return res.sendStatus(403);
+    }
+    
     return res.sendStatus(200);
 })

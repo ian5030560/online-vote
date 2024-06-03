@@ -37,7 +37,7 @@
                 <thead>
                     <tr>
                         <% cols.forEach(col => { %>
-                            <th scope="col"><%= col %></th>
+                            <th scope="col" class="text-center"><%= col %></th>
                         <% }) %>
                     </tr>
                 </thead>
@@ -47,12 +47,12 @@
                         aria-expanded="false" aria-controls="collapse-<%= index %>" data-vote-title=<%- item.data[0] %>>
                             <% item.data.forEach((data, index) => { %>
                                 <% if (index === 0) { %>
-                                    <th class="align-middle" data-col-name="<%= cols[index] %>:">
+                                    <th class="align-middle text-center" data-col-name="<%= cols[index] %>:">
                                         <span class="h4"><%= data %></span>
                                     </th>
                                 <% } else { %>
-                                    <td class="align-middle" data-col-name="<%= cols[index] %>:">
-                                        <span class="card-table-text">
+                                    <td class="align-middle text-center" data-col-name="<%= cols[index] %>:">
+                                        <span>
                                             <%= data %>
                                         </span>
                                     </td>
@@ -86,11 +86,11 @@
                                                         return divided / divider
                                                     } %>
                                                     <div class="col-9">
-                                                        <div class="progress position-relative" role="progressbar" aria-label="prgress-label"
+                                                        <div class="progress position-relative" role="progressbar" aria-label="progressbar-label"
                                                         aria-valuemin="0" aria-valuemax="100" style="height: 20px;"
                                                         aria-valuenow=<%= divide(data.value, item.number) %>>
                                                             <div class="progress-bar" style="width: <%= divide(data.value, item.number) * 100 %>%;"></div>
-                                                            <div class="progress-label">
+                                                            <div class="position-absolute top-50 start-50 translate-middle">
                                                                 <%= data.value %>人
                                                             </div>
                                                         </div>
