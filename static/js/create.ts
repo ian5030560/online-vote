@@ -2,6 +2,7 @@ import { html } from "./utils/framewrok";
 import Option from "./ui/option";
 import { radioListener } from "./utils";
 import switchTheme from "./ui/switch";
+import "bootstrap";
 
 let ticketNumberContainer = document.getElementById("ticket-number-container");
 let optionContainer = document.getElementById("option-container");

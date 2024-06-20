@@ -5,6 +5,7 @@ const sequelize = new Sequelize(env.DATABASE_NAME!, env.DATABASE_USERNAME!, env.
     {
         host: env.DATABASE_HOST,
         dialect: "mariadb",
+        logging: false,
     },
 );
 

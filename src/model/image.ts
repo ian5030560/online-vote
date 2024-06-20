@@ -26,7 +26,7 @@ const Image = sequelize.define<ImageModel>(
             primaryKey: true,
         },
         content: {
-            type: DataTypes.BLOB,
+            type: DataTypes.BLOB("long"),
             allowNull: false,
         },
         filename: {

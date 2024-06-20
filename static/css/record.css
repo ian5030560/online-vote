@@ -1,7 +1,10 @@
-.box {
-    min-height: 300px;
-}
+@media screen and (max-width: 768px) {
+    .less-md-img{
+        width: auto;
+    }
 
-.box-item {
-    max-height: 500px;
+    .less-md-item{
+        width: auto;
+        flex-grow: 1;
+    }
 }

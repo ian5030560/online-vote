@@ -6,6 +6,7 @@ import multer from "multer";
 import Image, { hasIdenticalImage } from "./model/image";
 import { createHash } from "crypto";
 import Option from "./model/option";
+import User from "./model/user";
 
 const create = Router();
 let upload = multer({ storage: multer.memoryStorage() });
@@ -37,7 +38,7 @@ async function handleImage(userId: string, images: Express.Multer.File[]) {
     let ids = [];
     for (let image of images) {
         let content = image.buffer;
-        let info = JSON.stringify(content);
+        let info = userId + JSON.stringify(content);
         const md5 = createHash("md5");
         let id = md5.update(info).digest("hex");
 
@@ -72,11 +73,10 @@ function handleVote(formData: any, id: string) {
     return vote;
 }
 async function handleCreate(req: Request, res: Response) {
-    let success = false;
+    let success: boolean | undefined = undefined;
+    let id = parseJwtToId(req.cookies["token"]);
     if (req.method === "POST") {
         let formData = req.body;
-        let id = parseJwtToId(req.cookies["token"]);
-
         let vote = handleVote(formData, id);
         let imageIds: string[] = [];
         if (Array.isArray(req.files)) {
@@ -87,8 +87,12 @@ async function handleCreate(req: Request, res: Response) {
         success = true;
     }
 
+    let item = await User.findByPk(id);
+
     return res.render("create", {
         signIn: true,
+        username: item?.name,
+        picture: item?.picture,
         actions: [{ url: "/record", name: "我的紀錄" }],
         success: success,
     });

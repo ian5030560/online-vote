@@ -1,11 +1,11 @@
 import { config } from "dotenv";
 config();
-import express from "express";
+import express, {Request} from "express";
 import engine from "ejs-locals";
-import { isSignIn, auth } from "./auth";
+import { isSignIn, auth, parseJwtToId } from "./auth";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { initDB } from "./model";
+import sequelize, { initDB } from "./model";
 import create from "./create";
 import { getImageById } from "./model/image";
 import { getOptionsInVote } from "./model/option";
@@ -15,6 +15,7 @@ import { content } from "./content";
 import Record from "./model/record";
 import { formatDate } from "./utils";
 import { record } from "./record";
+import User from "./model/user";
 
 let app = express();
 
@@ -30,6 +31,10 @@ app.use("/create", create);
 app.use("/content", content);
 app.use("/record", record);
 app.use(cors());
+app.use((req, res, next) => {
+    console.log(req.url, req.method, res.statusCode);
+    next();
+})
 
 export enum STATE {
     NOTSTART = "未開始",
@@ -39,65 +44,86 @@ export enum STATE {
 
 async function getAllVoteAtHome(state?: STATE) {
     let condition: WhereOptions<InferAttributes<VoteModal, { omit: never }>>;
-    
-    switch (state) {
-        case STATE.NOTSTART:
-            condition = {
-                start: { [Op.gt]: new Date() }
-            }
-            break;
-        case STATE.END:
-            condition = {
-                end: { [Op.lt]: new Date() }
-            }
-            break;
-        case STATE.ING:
-            condition = {
-                start: { [Op.lte]: new Date() },
-                end: { [Op.gte]: new Date() }
-            }
-            break;
-        default:
-            throw new Error("Invalid state");
+    let cmap = {
+        [STATE.NOTSTART]: {start: { [Op.gt]: new Date() }},
+        [STATE.END]: {end: { [Op.lt]: new Date() }},
+        [STATE.ING]: {
+            start: { [Op.lte]: new Date() },
+            end: { [Op.gte]: new Date() }
+        },
     }
     
+    condition = state ? cmap[state] : cmap[STATE.NOTSTART];
+
     let items = await Vote.findAll({ where: condition });
-    let mappedItems: any[] = [];
+    let mapped: any[] = [];
 
     for (let item of items) {
         let options = await getOptionsInVote(item.user, item.id);
 
         let numbers: number[] = [];
         for (let option of options) {
-            let record = await Record.findAll({ where: { user: option.user, option: option.id } });
-            numbers.push(record.length);
+            let record: any[] = await Record.findAll(
+                {
+                    attributes: [[sequelize.fn("count", 1), "count"]],
+                    where: { creator: option.user, option: option.id, vote: item.id },
+                    group: "user",
+                    raw: true,
+                }
+            );
+            numbers.push(record[0] ? record[0].count : 0);
         }
 
-        mappedItems.push({
+        let people = (await Record.findAll(
+            {
+                attributes: [[sequelize.fn("COUNT", sequelize.fn("DISTINCT", sequelize.col("user"))), "count"]],
+                where: {
+                    vote: item.id,
+                    creator: item.user,
+                },
+                raw: true,
+            }
+        ) as any[])[0].count;
+
+        let number = (await Record.findAndCountAll(
+            {
+                where: {
+                    vote: item.id,
+                    creator: item.user,
+                },
+            })
+        ).count
+
+        mapped.push({
             user: item.user,
             id: item.id,
             title: item.title,
-            // decription: item.description,
             start: item.start,
             end: item.end,
             options: options.map((option, index) => ({
                 name: option.name,
-                // description: option.description,
                 number: numbers[index],
                 image: option.image,
             })),
-            number: numbers.reduce((prev, curr) => prev + curr, 0)
+            people: people,
+            number: number
         });
     }
 
-    return mappedItems;
+    return mapped;
 }
 
 app.get('/', async (req, res) => {
-    let signIn: boolean | undefined;
-
+    let user: string | undefined = undefined;
+    let picture: string | undefined = undefined;
+    let signIn: boolean | undefined = undefined;
     try {
         signIn = await isSignIn(req, res);
+        if(signIn){
+            let item = await User.findByPk(parseJwtToId(req.cookies["token"]));
+            user = item?.name;
+            picture = item?.picture;
+        }
     }
     catch (err) {
         return res.sendStatus(401);
@@ -113,10 +139,12 @@ app.get('/', async (req, res) => {
     }
     return res.render("home", {
         signIn: signIn,
+        username: user,
+        picture: picture,
         actions: [{ url: "record", name: "我的紀錄" }, { url: "create", name: "創建投票" }],
-        cols: ["主題", "日期", "人數", ""],
+        cols: ["主題", "開始", "結束", "人數", ""],
         items: items.map((it) => ({
-            data: [it.title, `${formatDate(it.start)}~${formatDate(it.end)}`, `${it.number}人`],
+            data: [it.title, formatDate(it.start), formatDate(it.end), `${it.people}人`],
             number: it.number,
             options: it.options.map((option: any) => ({
                 src: `image/${it.user}/${option.image}`,
@@ -134,10 +162,10 @@ app.get("/image/:user/:id", async (req, res) => {
     let user = req.params.user;
     let id = req.params.id;
     let image = await getImageById(user, id);
-    if (!image) return res.send("Images Not found");
+
+    if (!image) return res.sendFile("assets/0EbFCLzPKD.jpg", {root: "static"});
 
     res.contentType(image.mime);
-    res.strictContentLength = true;
 
     return res.send(image.content);
 });

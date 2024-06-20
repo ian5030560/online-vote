@@ -37,7 +37,7 @@ const Option = sequelize.define<OptionModel>(
             allowNull: false,
         },
         description: {
-            type: DataTypes.TEXT("tiny"),
+            type: DataTypes.TEXT("long"),
             allowNull: false,
         },
         image: {

@@ -1,15 +1,9 @@
+import 'bootstrap';
 import switchTheme from "./ui/switch";
 
 let search = document.getElementById("search") as HTMLInputElement;
 let votes = document.querySelectorAll("tr[data-vote-title]");
 window.onload = () => {
-
-    let buttons = document.getElementsByClassName("goto");
-    for(let button of buttons){
-        (button as HTMLElement).addEventListener("click", (e) => {
-            window.location.href = button.getAttribute("data-href")!;
-        })
-    }
  
     search?.addEventListener("input", (e) => {
         for(let vote of votes){

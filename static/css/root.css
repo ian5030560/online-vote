@@ -14,3 +14,9 @@ html, body{
 .user-nav:hover {
     color: #fff;
 }
+
+@media screen and (max-width: 992px){
+    .md-none{
+        display: none;
+    }
+}

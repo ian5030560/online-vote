@@ -4,6 +4,7 @@ import { OAuth2Client } from "googleapis-common";
 import { env } from "process";
 import User from "./model/user";
 import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import { GetTokenResponse } from "../node_modules/google-auth-library/build/src/auth/oauth2client"
 
 export const auth = Router();
 
@@ -33,7 +34,15 @@ auth.get("/", (req, res) => {
 auth.get("/google", async (req, res) => {
     let code = req.query as unknown as string;
     let client = getAuthClient();
-    let { tokens } = await client.getToken(code);
+    let result: GetTokenResponse;
+    try {
+        result = await client.getToken(code);
+    }
+    catch (err) {
+        return res.redirect("/");
+    }
+
+    let { tokens } = result;
     if (!tokens.id_token) return res.sendStatus(401);
 
     let decoded = jwt.decode(tokens.id_token, { json: true });
@@ -71,34 +80,34 @@ auth.get("/signout", (req, res) => {
 export async function isSignIn(req: Request, res: Response): Promise<boolean> {
     let token = req.cookies["token"];
     if (!token) return false;
-    
-    try{
+
+    try {
         let verified = jwt.verify(token, env.JWT_SECRET!);
         if (typeof verified === "string") {
             verified = JSON.parse(verified) as JwtPayload;
         }
-    
+
         const { id } = verified as JwtPayload;
         if (!id) return false;
-    
+
         let item = await User.findByPk(id);
         if (!item) return false;
-        
+
     }
-    catch(err){
-        if(!(err instanceof TokenExpiredError)) throw new Error((err as Error).message);
+    catch (err) {
+        if (!(err instanceof TokenExpiredError)) throw new Error((err as Error).message);
         return false;
     }
     return true;
 }
 export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
-    try{
-        if(!isSignIn(req, res)){
+    try {
+        if (!await isSignIn(req, res)) {
             res.clearCookie("token");
             return res.redirect("/?state=進行中");
         }
     }
-    catch(err){
+    catch (err) {
         return res.sendStatus(401);
     }
 
@@ -106,12 +115,12 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 }
 
 
-export function parseJwtToId(token: any){
+export function parseJwtToId(token: any) {
     let decoded: JwtPayload;
-    try{
+    try {
         decoded = jwt.verify(token, env.JWT_SECRET!) as JwtPayload;
     }
-    catch(err){
+    catch (err) {
         throw err;
     }
 

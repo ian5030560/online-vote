@@ -16,7 +16,8 @@
 
         <main class="mt-3">
             <div class="container">
-                <div class="row">
+                <div class="row align-items-center">
+                    
                     <div class="col-1">
                         <span>題目:</span>
                     </div>
@@ -24,14 +25,17 @@
                         <p class="text-start h1"><%= title %></p>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-1">
-                        <span>敘述:</span>
+                <% if (description) { %>
+                    <div class="row">
+                        <div class="col-1">
+                            <span>敘述:</span>
+                        </div>
+                        <div class="col-11">
+                            <p class="text-start"><%= description %></p>
+                        </div>
                     </div>
-                    <div class="col-11">
-                        <p class="text-start"><%= description %></p>
-                    </div>
-                </div>
+                <% } %>
+
                 <div class="row">
                     <div class="col-1">
                         <span>日期:</span>
@@ -40,15 +44,15 @@
                         <p class="text-start"><%= start %>~<%= end %></p>
                     </div>
                 </div>
-                <div class="row position-relative">
-                    <div class="enable-label position-absolute top-0 start-0 text-bg-info rounded animate__animated animate__fadeInDown animate__fast">
+                <div class="row">
+                    <div class="mb-1 enable-label text-bg-info rounded animate__animated animate__fadeInDown animate__fast">
                         <span class="text-body-emphasis" id="enable" style="width: fit-content;" data-limit-number=<%= enabled %>>目前可投<%= enabled %>人</span>
                     </div>
                     <div class="col-12 border option-container overflow-y-auto">
-                        <ol class="p-3">
+                        <ol class="list-group list-group-numbered p-3">
                             <%
                                 function over(end) {
-                                    let time = Date.parse(end.replace("/", "-"));
+                                    let time = Date.parse(end.replace("/", "-")) + 86400 * 1000;
                                     return time < Date.now();
                                 }
 
@@ -58,41 +62,31 @@
                                 }
                             %>
                             <% items.forEach(item => { %>
-                                <li class="mb-3 container-fluid">
-                                    <div class="row" data-option-id=<%= item.id %>>
-                                        <div class="col-1 d-flex justify-content-center align-items-center">
-                                            <div role="button" aria-disabled=<%- !user || over(end) || before(start) %>
-                                                class="btn <%- item.isVoted ? "btn-primary" : "btn-outline-primary" %> <%- !user || over(end) || before(start) ? "disabled" : "" %>" 
-                                                data-is-voted=<%= item.isVoted %>>
-                                                <i class="bi bi-box-arrow-in-down"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col-2">
-                                            <img class="img-thumbnail" src=<%= item.src %> style="cursor: pointer;" alt="沒有圖片" width="100"/>
-                                        </div>
-                                        <div class="col-9">
-                                            <div class="container-fluid h-100">
-                                                <div class="row">
-                                                    <div class="col-2">
-                                                        <p><%= item.name %></p>
-                                                    </div>
-                                                    <div class="col-10">
-                                                        <p><%= item.content %></p>
-                                                    </div>
+                                <li class="list-group-item">
+                                    <div class="container-fluid">
+                                        <div class="row" data-option-id=<%= item.id %>>
+                                            <div class="col-1 d-flex justify-content-center align-items-center">
+                                                <div role="button" aria-disabled=<%- !user || over(end) || before(start) %>
+                                                    class="btn <%- item.isVoted ? "btn-primary" : "btn-outline-primary" %> <%- !user || over(end) || before(start) ? "disabled" : "" %>" 
+                                                    data-is-voted=<%= item.isVoted %>>
+                                                    <i class="bi bi-box-arrow-in-down"></i>
                                                 </div>
-                                                <div class="row h-50">
-                                                    <div class="col-12 align-self-center">
-                                                        <% function divide(divided, divider){
-                                                            if(divided === 0 && divider === 0) return 0;
-                                                            return divided / divider
-                                                        } %>
-                                                        <div class="progress position-relative" role="progressbar"
-                                                            aria-label="vote-number" aria-valuenow=<%= item.value %> 
-                                                            aria-valuemin="0" aria-valuemax=<%= number %> style="height: 25px;">
-                                                            <div class="progress-bar" style="width: <%= divide(item.value, number) * 100 %>%"></div>
-                                                            <div class="position-absolute top-50 start-50 translate-middle"><%= item.value %>人</div>
-                                                        </div>
-                                                    </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <img class="img-thumbnail" src=<%= item.src %> alt="沒有圖片" width="100"/>
+                                            </div>
+                                            <div class="col-9">
+                                                <p class="fs-3 fw-bold"><%= item.name %></p>
+                                                <p><%= item.content %></p>
+                                                <% function divide(divided, divider){
+                                                    if(divided === 0 && divider === 0) return 0;
+                                                    return divided / divider
+                                                } %>
+                                                <div class="progress position-relative" role="progressbar"
+                                                    aria-label="vote-number" aria-valuenow=<%= item.value %> 
+                                                    aria-valuemin="0" aria-valuemax=<%= number %> style="height: 25px;">
+                                                    <div class="progress-bar" style="width: <%= divide(item.value, number) * 100 %>%"></div>
+                                                    <div class="position-absolute top-50 start-50 translate-middle"><%= item.value %>人</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -127,6 +121,6 @@
         </div>
     </body>
     <div class="d-none" data-user-token=<%= user %> id="token"></div>
-    <%- include basic/module %>
+
     <script src="/dist/content.js" type="module"></script>
 </html>

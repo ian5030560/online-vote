@@ -1,4 +1,5 @@
 import { Component, html } from "../utils/framewrok";
+import $ from "jquery";
 
 function switchButton(dark: boolean, onSwtich?: (val: boolean) => void): Component {
     return {

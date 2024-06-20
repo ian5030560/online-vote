@@ -11,3 +11,8 @@ export function md5Hash(val: string): string{
 export function formatDate(data: Date): string {
     return data.toString().split("-").join("/")
 }
+
+export function now(){
+    let offset = new Date().getTimezoneOffset();
+    return Date.now() - offset * 60 * 1000;
+}

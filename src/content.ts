@@ -1,5 +1,5 @@
 import { Router, json } from "express";
-import { authMiddleware, parseJwtToId } from "./auth";
+import { parseJwtToId } from "./auth";
 import Vote from "./model/vote";
 import Option from "./model/option";
 import express from "express";
@@ -8,7 +8,8 @@ import User from "./model/user";
 import { formatDate } from "./utils";
 
 function over(end: Date){
-    return Date.parse(end.toString()) < Date.now();
+    console.log(Date.parse(end.toString()) + 86400 * 1000 < Date.now());
+    return Date.parse(end.toString()) + 86400 * 1000 < Date.now();
 }
 async function getVoteContent(creator: string, id: string, user?: string){
     const vote = await Vote.findOne({where: {user: creator, id: id}});
@@ -47,15 +48,28 @@ content.get("/:creator/:id", async (req, res) => {
     if(!(creator && id)) return res.sendStatus(404);
     
     const token = req.cookies["token"];
-    let user: string | undefined;
+    let user: string | undefined = undefined;
     let content: any;
-  
-    user = token ? (await User.findByPk(parseJwtToId(token)))!.id: undefined;
+    let name: string | undefined = undefined;
+    let picture: string | undefined = undefined;
+    try{
+        if(token){
+            user = parseJwtToId(token);
+            let item = await User.findByPk(user);
+            name = item?.name;
+            picture = item?.picture;
+        }
+    }
+    catch(err){
+        user = undefined;
+    }
     content = await getVoteContent(creator as string, id as string, user);
     if(!content) return res.sendStatus(404);
     
     return res.render("content", {
         signIn: !(token === undefined || token === null),
+        username: name,
+        picture: picture,
         user: user,
         actions: [{ url: "/record", name: "我的紀錄" }, { url: "/create", name: "創建投票" }],
         ...content,
@@ -79,7 +93,6 @@ content.post("/vote", express.json(), async (req, res) => {
         option: data.option,   
     };
 
-    console.log(inserted); 
     try{
         await data.state ? Record.create(inserted): Record.destroy({where: inserted});
     }

@@ -10,34 +10,41 @@
 <body>
     <%- include navbar/start %>
         <%- include navbar/left/start %>
-            <ul class="nav nav-pills">
+            <ul class="navbar-nav nav-pills">
                 <li class="nav-item">
-                    <a class="nav-link<%- state=='進行中' ? ' active' : '' %>" aria-current="page" href="/?state=進行中">進行中</a>
+                    <a class="text-center nav-link <%- state=='進行中' ? 'active' : '' %>"
+                        <%- state=="進行中" ? 'aria-current="page"' : "" %>
+                        href="/?state=進行中">進行中</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link<%- state=='未開始' ? ' active' : '' %>" href="/?state=未開始">未開始</a>
+                    <a class="text-center nav-link<%- state=='未開始' ? ' active' : '' %>" 
+                        <%- state=="未開始" ? 'aria-current="page"' : "" %>
+                        href="/?state=未開始">未開始</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link<%- state=='已結束' ? ' active' : '' %>" href="/?state=已結束">已結束</a>
+                    <a class="text-center nav-link<%- state=='已結束' ? ' active' : '' %>" 
+                        <%- state=="已結束" ? 'aria-current="page"' : "" %>
+                        href="/?state=已結束">已結束</a>
                 </li>
             </ul>
         <%- include navbar/left/end %>
         <%- include navbar/right/index %>
     <%- include navbar/end %>
+
     <main class="px-4 py-5">
-        
         <div class="input-group w-50">
             <span class="input-group-text" id="search-label"><i class="bi bi-search"></i></span>
-            <input type="text" id="search" class="form-control" placeholder="搜尋問題" aria-label="search"
+            <input type="text" id="search" class="form-control" placeholder="搜尋主題" aria-label="search"
                 aria-describedby="search-label" />
         </div>
         
-        <div class="container-fluid pt-3">
+        <div class="container-fluid pt-3 table-responsive">
             <table class="table" id="result">
                 <thead>
                     <tr>
-                        <% cols.forEach(col => { %>
-                            <th scope="col" class="text-center"><%= col %></th>
+                        <th scope="col" class="text-center w-50 text-nowrap"><%= cols[0] %></th>
+                        <% cols.slice(1).forEach(col => { %>
+                            <th scope="col" class="text-end text-nowrap"><%= col %></th>
                         <% }) %>
                     </tr>
                 </thead>
@@ -47,48 +54,44 @@
                         aria-expanded="false" aria-controls="collapse-<%= index %>" data-vote-title=<%- item.data[0] %>>
                             <% item.data.forEach((data, index) => { %>
                                 <% if (index === 0) { %>
-                                    <th class="align-middle text-center" data-col-name="<%= cols[index] %>:">
-                                        <span class="h4"><%= data %></span>
+                                    <th class="align-middle text-center w-50 text-nowrap" data-col-name="<%= cols[index] %>:">
+                                        <span class="h5"><%= data %></span>
                                     </th>
                                 <% } else { %>
-                                    <td class="align-middle text-center" data-col-name="<%= cols[index] %>:">
+                                    <td class="align-middle text-end text-nowrap" data-col-name="<%= cols[index] %>:">
                                         <span>
                                             <%= data %>
                                         </span>
                                     </td>
                                 <% } %>
                             <% }) %>
-                            <td class="text-end">
-                               <button class="btn btn-primary goto" data-href=<%= item.url %>>
+                            <td class="text-end align-middle">
+                                <a class="icon-link fs-4" href=<%= item.url %>>
                                     <i class="bi bi-box-arrow-in-right"></i>
-                               </button> 
+                                </a>
                             </td>
                         </tr>
                         <tr>
                             <td class="p-0" colspan="12">
-                                <ol class="collapse m-1" id="collapse-<%= index %>">
+                                <ol class="list-group list-group-numbered collapse m-1" id="collapse-<%= index %>">
                                     <% item.options.forEach(data => { %>
-                                        <li class="py-2">
-                                            <div class="container-fluid">
-                                                <div class="row align-items-center">
-                                                    <div class="col-3">
-                                                        <div class="d-flex align-items-center">
-                                                            <span class="float-start me-3">
-                                                                <img src=<%= data.src %> alt="沒有圖片" width="50"/>
-                                                            </span>
-                                                            <span class="h5 fw-bold text-body-secondary text-break w-100 text-center">
-                                                                <%= data.name %>
-                                                            </span>
-                                                        </div>
+                                        <li class="list-group-item align-items-center">
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-auto text-center">
+                                                        <img class="img-fluid" src=<%= data.src %> alt="沒有圖片" width="100"/>        
                                                     </div>
                                                     <% function divide(divided, divider){
                                                         if(divided === 0 && divider === 0) return 0;
                                                         return divided / divider
                                                     } %>
-                                                    <div class="col-9">
+                                                    <div class="col-auto vstack gap-3">
+                                                        <span class="h5 fw-bold text-body-secondary">
+                                                            <%= data.name %>
+                                                        </span>
                                                         <div class="progress position-relative" role="progressbar" aria-label="progressbar-label"
-                                                        aria-valuemin="0" aria-valuemax="100" style="height: 20px;"
-                                                        aria-valuenow=<%= divide(data.value, item.number) %>>
+                                                            aria-valuemin="0" aria-valuemax="100" style="height: 20px;"
+                                                            aria-valuenow=<%= divide(data.value, item.number) %>>
                                                             <div class="progress-bar" style="width: <%= divide(data.value, item.number) * 100 %>%;"></div>
                                                             <div class="position-absolute top-50 start-50 translate-middle">
                                                                 <%= data.value %>人
@@ -109,6 +112,5 @@
     </main>
 
 </body>
-<%- include basic/module %>
 <script src="dist/home.js" type="module"></script>
 </html>
