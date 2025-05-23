@@ -1,0 +1,119 @@
+@startuml 使用案例圖
+actor :使用者: as user
+package 搜尋投票活動{
+    usecase "輸入關鍵字" as inputKeyword
+    user --> inputKeyword
+    usecase "展示結果" as displayResult
+    displayResult --> inputKeyword: include
+    usecase "依關聯度排序" as sortByAssociation
+    sortByAssociation --> displayResult: include
+}
+
+actor :用戶: as client
+client --|> user
+package "登入/註冊"{
+    package 登入{
+        usecase "提交帳號/信箱和密碼" as signIn
+        client --> signIn
+        usecase "檢查帳號/信箱" as checkAccount
+        usecase "檢查密碼" as checkPassword
+        checkAccount --> signIn: include
+        checkPassword --> signIn: include
+    }
+
+    package 註冊{
+        usecase "提交資訊" as signUp
+        client --> signUp
+        usecase "檢查帳號" as checkAccount1
+        usecase "檢查密碼" as checkPassword1
+        usecase "檢查信箱" as checkEmail
+        checkAccount1 --> signUp: include
+        checkPassword1 --> signUp: include
+        checkEmail --> signUp: include
+        usecase "儲存資訊" as storeInfo
+        storeInfo --> checkAccount1: include
+        storeInfo --> checkPassword1: include
+        storeInfo --> checkEmail: include
+    }
+
+    package 忘記密碼{
+        usecase "提交帳號/信箱" as summitAccount
+        client --> summitAccount
+        usecase "信箱通知驗證碼" as emailToken
+        emailToken --> summitAccount: include
+        usecase "提交驗證碼" as summitToken
+        client --> summitToken: include
+        usecase "驗證驗證碼" as checkToken
+        checkToken --> summitToken: include
+        usecase "提交新密碼" as summitNewPassword
+        client --> summitNewPassword: include
+        usecase "儲存新密碼" as storeNewPassword
+        storeNewPassword --> summitNewPassword: include
+    }
+
+    package 第三方驗證{
+        usecase "從第三方取得驗證資訊" as getThirdPartyInfo
+        client --> getThirdPartyInfo
+        usecase "提交資訊" as summitInfo
+        client --> summitInfo
+        usecase "驗證資訊" as validateInfo
+        validateInfo --> summitInfo: include
+        usecase "創建帳號" as createAccount
+        createAccount --> validateInfo: extend
+    }
+}
+
+package 進行投票活動{
+    usecase "送出投票" as vote
+    client --> vote
+    usecase "展示投票結果" as displayVoteResult
+    displayVoteResult --> vote: extend
+    usecase "儲存投票資訊" as storeVoteInfo
+    storeVoteInfo --> vote: include
+
+    usecase "送出留言" as summitComment
+    client --> summitComment
+    usecase "展示留言訊息" as displayComment
+    displayComment --> summitComment: include
+    usecase "儲存留言資訊" as storeCommentInfo
+    storeCommentInfo --> displayComment: include
+}
+
+package 設定使用者資訊{
+    usecase "修改帳號" as updateAccount
+    client --> updateAccount
+    usecase "信箱通知驗證碼" as emailToken1
+    emailToken1 --> updateAccount
+    usecase "提交驗證碼" as summitToken1
+    client --> summitToken1: include
+    usecase "驗證驗證碼" as checkToken1
+    checkToken1 --> summitToken1: include
+    usecase "修改密碼" as updatePassword
+    client --> updatePassword
+    emailToken1 --> updatePassword
+    usecase "修改信箱" as updateEmail
+    client --> updateEmail
+    emailToken1 --> updateEmail
+}
+
+actor :建立者: as creator
+creator --|> client
+
+package 建立(更新)投票活動{
+    usecase "送出活動" as summitActivity
+    creator --> summitActivity
+    usecase "顯示送出結果" as showSummitResult
+    showSummitResult --> summitActivity: include
+    usecase "儲存活動資訊" as storeActivityInfo
+    storeActivityInfo --> showSummitResult: include
+}
+
+package 刪除投票活動{
+    usecase "確認刪除" as confirmRemove
+    creator --> confirmRemove
+    usecase "顯示刪除結果" as showRemoveResult
+    showRemoveResult --> confirmRemove
+    usecase "刪除該活動" as removeActivity
+    removeActivity --> showRemoveResult
+}
+@enduml

@@ -1,0 +1,247 @@
+@startuml 時序圖
+actor 使用者 as user
+participant 伺服器 as server
+database 資料庫 as db
+participant 第三方伺服器 as thirdServer
+
+alt 登入
+    alt 快速登入
+        autonumber
+        user --> server: 傳遞 jwt token
+        server --> server: 驗證 jwt token
+    else 驗證失敗
+        server --> user: 回傳失敗
+        user --> user: 導回首頁(若不在首頁)
+    else
+        autonumber 3
+        server --> user: 回傳成功
+    end
+
+    alt 一般登入
+        autonumber
+        user --> server: 提交帳號/信箱和密碼
+        server --> db: 查詢此帳號/信箱
+    else 帳號/信箱錯誤
+        server --> user: 回傳錯誤
+    else
+        autonumber 3
+        db --> server: 取得該使用者基本資訊
+        server --> server: 檢查提交密碼的雜湊值
+    else 密碼錯誤
+        server --> user: 回傳錯誤
+    else
+        autonumber 5
+        server --> user: 回傳 jwt token
+        user --> user: 儲存 jwt token in local storage
+    end
+end
+
+alt 註冊
+    autonumber
+    user --> server: 提交使用者資訊(名稱、帳號、信箱、密碼)
+    server --> server: 檢查名稱、帳號、信箱
+else 帳號或信箱已被使用
+    server --> user: 回傳錯誤
+else
+    autonumber 3
+    server --> server: 檢查密碼格式
+else 密碼格式錯誤
+    server --> user: 回傳錯誤
+else
+    autonumber 4
+    server --> user: 回傳 jwt token
+    user --> user: 儲存 jwt token in local storage
+end
+
+alt 第三方驗證
+    autonumber
+    user --> thirdServer: 使用第三方驗證
+    thirdServer --> user: 回傳使用者資訊
+    user --> server: 提交使用者資訊
+    server --> server: 驗證使用者資訊
+else 資訊錯誤
+    server --> user: 回傳錯誤
+    user --> user: 提示 "無法完成此第三方驗證"
+else 帳號尚無創建
+    autonumber 5
+    server --> db: 創建帳號
+else
+    server --> user: 回傳 jwt token
+    user --> user: 儲存 jwt token in local storage
+end
+
+alt 忘記密碼
+    autonumber
+    user --> server: 提交帳號/信箱
+    server --> db: 搜尋帳號/信箱
+else 查無帳號/信箱
+    server --> user: 回傳錯誤
+    user --> user: 提示"帳號/信箱不存在"
+else
+    autonumber 3
+    server --> user: 信箱通知驗證碼
+    user --> server: 提交驗證碼
+    server --> server: 檢查驗證碼
+else 驗證碼錯誤
+    server --> user: 回傳錯誤
+    user --> user: 提示 "驗證碼錯誤"
+else 驗證碼過期
+    autonumber 6
+    server --> user: 回傳錯誤
+    user --> user: 提示 "驗證碼過期"
+else
+    autonumber 6
+    server --> user: 回傳 jwt token
+    user --> server: 提交新密碼
+    server --> server: 檢查密碼格式
+else 密碼格式錯誤
+    server --> user: 回傳錯誤
+else
+    autonumber 9
+    server --> user: 回傳成功
+end
+
+alt 搜尋投票活動
+    autonumber
+    user --> server: 提交關鍵字與過濾條件
+else
+    autonumber 3
+    db --> server: 取得符合條件的所有活動
+    server --> server: 計算活動與關鍵字之排名
+    server --> user: 回傳某排名區段(500個作一個區段)
+end
+
+alt 進行投票活動
+    autonumber
+    user --> server: 提交投票資訊
+    server --> server: 檢查 jwt token
+else jwt token錯誤(不存在、格式錯誤、過期)
+    server --> user: 回傳錯誤
+    user --> user: 導回首頁
+else
+    autonumber 3
+    server --> db: 儲存投票資訊
+else 儲存失敗
+    server --> user: 回傳錯誤
+    user --> user: 提示 "儲存失敗"
+else 活動可公開結果
+    autonumber 4
+    server --> user: 回傳目前投票資訊
+else
+    autonumber 4
+    server --> user: 回傳成功
+end
+
+alt 留言投票活動
+    autonumber
+    user --> server: 送出留言
+    server --> server: 檢查 jwt token
+else jwt token錯誤(不存在、格式錯誤、過期)
+    server --> user: 回傳錯誤
+    user --> user: 導回首頁
+else
+    autonumber 3
+    server --> db: 儲存留言資訊
+else 儲存失敗
+    server --> user: 回傳錯誤
+    user --> user: 提示 "儲存失敗"
+else
+    autonumber 4
+    server --> user: 回傳該留言串下的留言
+end
+
+alt 建立(更新)投票活動
+    autonumber
+    user --> server: 送出活動資訊
+    server --> server: 檢查 jwt token
+else jwt token錯誤(不存在、格式錯誤、過期)
+    server --> user: 回傳錯誤
+    user --> user: 導回首頁
+else
+    autonumber 3
+    server --> db: 儲存活動資訊
+else 儲存失敗
+    server --> user: 回傳錯誤
+    user --> user: 提示 "儲存失敗"
+else
+    autonumber 4
+    server --> user: 回傳成功
+end
+
+alt 刪除投票活動
+    user --> server: 刪除該活動
+    server --> server: 檢查 jwt token
+else jwt token錯誤(不存在、格式錯誤、過期)
+    server --> user: 回傳錯誤
+    user --> user: 導回首頁
+else
+    autonumber 3
+    server --> db: 刪除該活動
+else 刪除失敗
+    server --> user: 回傳錯誤
+    user --> user: 提示 "刪除失敗"
+else
+    autonumber 4
+    server --> user: 回傳成功
+end
+
+alt 設定使用者資訊
+    alt 修改帳號、密碼、信箱
+        autonumber
+        user --> server: 請求修改帳號/密碼/信箱
+        server --> server: 檢查 jwt token
+    else jwt token錯誤(不存在、格式錯誤、過期)
+        server --> user: 回傳錯誤
+        user --> user: 導回首頁
+    else
+        autonumber 3
+        server --> server: 產生驗證碼
+        server --> user: 信箱通知驗證碼
+        user --> server: 送出驗證碼
+        server --> server: 檢查驗證碼
+    else 驗證碼錯誤
+        server --> user: 回傳錯誤
+        user --> user: 提示 "驗證碼錯誤"
+    else 驗證碼過期
+        autonumber 7
+        server --> user: 回傳錯誤
+        user --> user: 提示 "驗證碼過期"
+    else
+        autonumber 7
+        server --> user: 回傳成功
+        user --> server: 提交帳號/密碼/信箱
+        server --> server: 檢查 jwt token
+    else jwt token錯誤(不存在、格式錯誤、過期)
+        server --> user: 回傳錯誤
+        user --> user: 導回首頁
+    else
+        autonumber 10
+        server --> db: 更新帳號/密碼/信箱
+    else 更新失敗
+        server --> user: 回傳錯誤
+        user --> user: 提示 "更新失敗"
+    else
+        autonumber 11
+        server --> user: 回傳成功
+    end
+
+    alt 修改名稱、圖片
+        autonumber
+        user --> server: 送出名稱/圖片
+        server --> server: 檢查 jwt token
+    else jwt token錯誤(不存在、格式錯誤、過期)
+        server --> user: 回傳錯誤
+        user --> user: 導回首頁
+    else
+        autonumber 3
+        server --> db: 更新名稱/圖片
+    else 更新失敗
+        server --> user: 回傳錯誤
+        user --> user: 提示 "更新失敗"
+    else
+        autonumber 4
+        server --> user: 回傳成功
+        user --> user: 重整頁面
+    end
+end
+@enduml
