@@ -1,7 +1,7 @@
 ```mermaid
 erDiagram
     User{
-        INT id PK
+        UUID id PK
         VARCHAR name
         VARCHAR account
         VARCHAR email
@@ -11,43 +11,44 @@ erDiagram
     }
 
     Activity {
-        INT id PK
-        INT userId FK
+        UUID id PK
+        UUID userId FK
         VARCHAR title
         LONGTEXT content
         CHOICE choice
         BOOL viewable
         DATE start
         DATE end
+        DATETIME create
     }
 
     Media{
-        INT userId FK
+        UUID userId FK
         LONGBLOB content
         VARCHAR name
         VARCHAR hash
     }
 
-    Item{
+    Option{
         INT id PK
-        INT activityId FK
-        INT userId FK
+        UUID activityId FK
+        UUID userId FK
         VARCHAR content
     }
 
     Vote{
-        INT voterId FK
-        INT creatorId FK
-        INT activityId FK
-        INT itemId FK
-        DATETIME datetime
+        UUID voterId FK
+        UUID ownerId FK
+        UUID activityId FK
+        INT optionId FK
+        DATETIME create
     }
 
     Message{
-        INT id PK
-        INT parentId
-        INT activityId FK
-        INT userId FK
+        UUID id PK
+        UUID parentId
+        UUID activityId FK
+        UUID userId FK
         VARCHAR content
         DATETIME create
         DATETIME lastUpdate
@@ -60,11 +61,11 @@ erDiagram
     User ||--o{ Vote : casts
     User ||--o{ Message : posts
 
-    Activity ||--o{ Item : includes
+    Activity ||--o{ Option : includes
     Activity ||--o{ Vote : has
     Activity ||--o{ Message : has
 
-    Item ||--o{ Vote : receives
+    Option ||--o{ Vote : receives
 
     Message ||--|| Message : replies
 ```

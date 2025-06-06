@@ -1,0 +1,1097 @@
+openapi: 3.0.4
+info:
+  title: Online-Vote - OpenAPI 3.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.12
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io
+
+tags:
+  - name: auth
+    description: Authentication and Authorization to users
+
+  - name: user
+    description: Everything about users
+
+  - name: activity
+    description: Everything about activities
+
+  - name: otp
+    description: OTP service for users
+
+  - name: vote
+    description: Votes of users to activities
+
+  - name: message
+    description: Messages of activities
+
+  - name: media
+    description: Images and videos of users
+
+paths:
+  /auth/sign-in:
+    post:
+      tags:
+        - auth
+      summary: Access the account of the user
+      requestBody:
+        $ref: "#/components/requestBodies/SignIn"
+      responses:
+        "200":
+          $ref: "#/components/responses/AccessSuccess"
+        "403":
+          $ref: "#/components/responses/AccessFail"
+        "400":
+          $ref: "#/components/responses/SignInError"
+
+  /auth/sign-in/quick:
+    get:
+      security:
+        - jwtAuth:
+          - access
+      tags:
+        - auth
+      summary: Access the account of the user immediately
+      responses:
+        "200":
+          $ref: "#/components/responses/AccessSuccess"
+        "403":
+          $ref: "#/components/responses/AccessFail"
+
+  /auth/google:
+    post:
+      tags:
+        - auth
+      summary: Access the account through google
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: The "credential" in response object of google
+      responses:
+        "200":
+          $ref: "#/components/responses/AccessSuccess"
+        "403":
+          $ref: "#/components/responses/AccessFail"
+
+  /auth/facebook:
+    post:
+      tags:
+        - auth
+      summary: Access the account through facebook
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: The "signedRequest" in response object of facebook
+      responses:
+        "200":
+          $ref: "#/components/responses/AccessSuccess"
+        "401":
+          $ref: "#/components/responses/AccessFail"
+
+  /auth/sign-up:
+    post:
+      tags:
+        - auth
+      summary: Create an account
+      description: Summit the required data to create
+      requestBody:
+        $ref: "#/components/requestBodies/SignUp"
+      responses:
+        "200":
+          description: Create successfully
+        "400":
+          $ref: "#/components/responses/SignUpError"
+  
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: Refresh the access token
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: The refresh token
+      responses:
+        '200':
+          description: Refresh successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: The refresh token is invalid
+           
+  /user/{id}:
+    get:
+      security:
+        - jwtAuth:
+          - read
+      parameters:
+        - $ref: "#/components/parameters/User"
+      tags:
+        - user
+      summary: Get the user information
+      description: Get the information of the user by id
+      responses:
+        "200":
+          $ref: "#/components/responses/User"
+        "404":
+          description: The information is not found
+
+  /user/account:
+    patch:
+      security:
+        - jwtAuth:
+          - write
+          otpAuth:
+          - write
+      tags:
+        - user
+      summary: Update the account of user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/User/properties/id"
+                account:
+                  allOf:
+                    - $ref: "#/components/schemas/User/properties/account"
+                  description: The new account of the user
+      responses:
+        "200":
+          description: Update successfully
+        "400":
+          description: The old account should not equal to new one
+        "401":
+          $ref: "#/components/responses/InvalidOTP"
+  
+  /user/account/{id}:
+    delete:
+      security:
+        - jwtAuth:
+          - write
+          otpAuth:
+          - write
+      tags:
+        - user
+      summary: Delete the account of the user
+      parameters:
+        - $ref: "#/components/parameters/User"
+      responses:
+        "200":
+          description: Delete successfully
+        "401":
+          $ref: "#/components/responses/InvalidOTP"
+
+  /user/password:
+    patch:
+      security:
+        - jwtAuth:
+          - write
+          otpAuth:
+          - write
+      tags:
+        - user
+      summary: Update the password of the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/User/properties/id"
+                password:
+                  allOf:
+                    - $ref: "#/components/schemas/User/properties/password"
+                  description: The new password of user
+
+      responses:
+        "200":
+          description: Update successfully
+        "401":
+          $ref: "#/components/responses/InvalidOTP"
+
+  /user/email:
+    patch:
+      security:
+        - jwtAuth:
+          - write
+          otpAuth:
+          - write
+      tags:
+        - user
+      summary: Update the email of user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/User/properties/id"
+                email:
+                  allOf:
+                    - $ref: "#/components/schemas/User/properties/email"
+                  description: The new email of user
+      responses:
+        "200":
+          description: Update successfully
+        "401":
+          $ref: "#/components/responses/InvalidOTP"
+
+  /user/avatar:
+    patch:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - user
+      summary: Update the avatar of user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/User/properties/id"
+                avator:
+                  allOf:
+                    - $ref: "#/components/schemas/User/properties/avatar"
+                  description: The new URL of the avatar of user
+      responses:
+        "200":
+          description: Update the avatar successfully
+
+  /user/name:
+    patch:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - user
+      summary: Update the name of user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/User/properties/id"
+                name:
+                  allOf:
+                    - $ref: "#/components/schemas/User/properties/name"
+                  description: The new name of user
+      responses:
+        "200":
+          description: Update the name successfully
+
+  /activity/{id}:
+    get:
+      parameters:
+        - $ref: "#/components/parameters/Owner"
+        - $ref: "#/components/parameters/Activity"
+      tags:
+        - activity
+      summary: Get the information of the activity
+      description: Get the information by the activity id and owner id
+      responses:
+        "200":
+          description: Get the information successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+
+    delete:
+      security:
+        - jwtAuth:
+          - write
+      parameters:
+        - $ref: "#/components/parameters/Owner"
+        - $ref: "#/components/parameters/Activity"
+      tags:
+        - activity
+      summary: Delete the activity
+      description: Delete by the activity id and owner id
+      responses:
+        "200":
+          description: Delete successfully
+  
+  /activity:
+    post:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - activity
+      summary: Build an activity
+      requestBody:
+        $ref: "#/components/requestBodies/Activity"
+      responses:
+        "200":
+          description: Build successfully
+        "400":
+          description: The format of the given data is not correct
+
+    put:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - activity
+      summary: Update the activity
+      requestBody:
+        $ref: "#/components/requestBodies/ActivityUpdate"
+      responses:
+        "200":
+          description: Update successfully
+
+  /activity/search:
+    get:
+      tags:
+        - activity
+      summary: Search the activities
+      description: Search the activities in some conditions
+      parameters:
+        - name: choice
+          in: query
+          description: |
+            * multiple: mutiple choice
+            * single: single choice
+
+            get both if choice is empty
+          schema:
+            type: string
+            enum:
+              - multiple
+              - single
+        - name: start
+          in: query
+          description: The start date of activities
+          schema:
+            $ref: "#/components/schemas/Activity/properties/start"
+        - name: end
+          in: query
+          description: The end date of activites
+          schema:
+            $ref: "#/components/schemas/Activity/properties/end"
+        - name: offset
+          in: query
+          description: The offset from the beginning of filtered activities
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+        - name: count
+          in: query
+          description: The count of requested activities
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        "200":
+          description: Get the list of filtered activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+
+  /otp:
+    post:
+      tags:
+        - otp
+      summary: Request an OTP token
+      description: Request an OTP token by the account or email
+      requestBody:
+        $ref: "#/components/requestBodies/OTP"
+      responses:
+        "200":
+          description: Request successfully and email a token to the email of the user
+        "401":
+          description: Can't found the given account
+
+  /otp/verify:
+    put:
+      tags:
+        - otp
+      summary: Verify the token of OTP service
+      description: Verify the token and bind it with the user temporarily
+      requestBody:
+        $ref: "#/components/requestBodies/OTPVerify"
+      responses:
+        "200":
+          description: The token is correct
+        "400":
+          description: The token is incorrect or expired
+        "401":
+          description: The account is not found
+
+  /vote:
+    get:
+      tags:
+        - vote
+      summary: Get the information of votes to options in the activity
+      parameters:
+        - $ref: "#/components/parameters/Owner"
+        - $ref: "#/components/parameters/ActivityQuery"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/Votes"
+
+    post:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - vote
+      summary: Vote the option in the activity
+      requestBody:
+        $ref: "#/components/requestBodies/Vote"
+      responses:
+        "200":
+          description: Vote successfully
+        "304":
+          description: The option is already voted
+        "400":
+          $ref: "#/components/responses/InvalidOption"
+
+    put:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - vote
+      summary: Cancel Voting to the option in the activity
+      requestBody:
+        $ref: "#/components/requestBodies/Vote"
+      responses:
+        "200":
+          description: Cancel successfully
+        "304":
+          description: The option is already canceled
+        "400":
+          $ref: "#/components/responses/InvalidOption"
+
+  /message:
+    get:
+      tags:
+        - message
+      summary: Get all messages of activity
+      parameters:
+        - $ref: "#/components/parameters/Owner"
+        - $ref: "#/components/parameters/ActivityQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/Messages"
+    post:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - message
+      summary: Add a message of activity
+      requestBody:
+        $ref: "#/components/requestBodies/Message"
+      responses:
+        "200":
+          description: Add successfully
+    patch:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - message
+      summary: Update the content of message
+      requestBody:
+        $ref: "#/components/requestBodies/MessageUpdate"
+      responses:
+        "200":
+          description: Update successfully
+  
+  /message/{id}:
+    delete:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - message
+      summary: Delete(Clean and disabled) the message of the activity
+      parameters:
+        - $ref: "#/components/parameters/Message"
+        - $ref: "#/components/parameters/Owner"
+        - $ref: "#/components/parameters/Activity"
+      responses:
+        "200":
+          description: Delete successfully
+
+  /media/{filename}:
+    get:
+      tags:
+        - media
+      summary: Get the content of the media file
+      parameters:
+        - $ref: "#/components/parameters/Filename"
+      responses:
+        "200":
+          description: Get the content successfully
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+            video/*:
+              schema:
+                type: string
+                format: binary
+
+    delete:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - media
+      summary: Delete the media file
+      parameters:
+        - $ref: "#/components/parameters/Filename"
+      responses:
+        "200":
+          description: Delete successfully
+
+  /media:
+    post:
+      security:
+        - jwtAuth:
+          - write
+      tags:
+        - media
+      summary: Upload a media file
+      requestBody:
+        content:
+          image/*:
+            schema:
+              type: string
+              format: binary
+          video/*:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: Upload successfull
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the user
+        name:
+          type: string
+          minLength: 1
+          description: The name of the user
+        account:
+          type: string
+          minLength: 1
+          description: The account of the user
+        email:
+          type: string
+          format: email
+          description: The email of the user
+        password:
+          type: string
+          minLength: 8
+          maxLength: 30
+          format: password
+          pattern: "[a-zA-Z0-9]+"
+          description: The password of the user
+        avatar:
+          type: string
+          format: uri
+          description: The avatar of the user
+      
+    Activity:
+      description: The information of the activity
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the activity
+        title:
+          type: string
+          minLength: 1
+          description: The title of the activity
+        content:
+          type: string
+          description: The content of the activity
+          format: json
+        viewable:
+          type: boolean
+          description: Determine if other users can preview the result
+        start:
+          type: string
+          format: date
+          description: The start date of the activity
+        end:
+          type: string
+          format: date
+          description: The end date of the activity
+        create:
+          type: string
+          format: date-time
+          description: The time of creation of the activity
+        options:
+          type: array
+          description: The list of options in the activity
+          items:
+            type: string
+            minLength: 1
+          minLength: 1
+    
+    Message:
+      description: The information of the message
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The id of the message
+        content:
+          type: string
+          description: The content of the message
+        create:
+          type: string
+          format: date-time
+        lastUpdate:
+          type: string
+          format: date-time
+          nullable: true
+      
+    JWTToken:
+      description: The jwt token object
+      type: object
+      properties:
+        access:
+          type: string
+          description: The access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+        refresh:
+          type: string
+          description: The refresh token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+      
+  parameters:
+    User:
+      name: id
+      in: path
+      description: The id of the user
+      required: true
+      schema:
+        $ref: "#/components/schemas/User/properties/id"
+        
+    Owner:
+      name: owner
+      in: query
+      required: true
+      description: The id of the owner
+      schema:
+        $ref: "#/components/schemas/User/properties/id"
+
+    Activity:
+      name: id
+      in: path
+      required: true
+      description: The id of the activity
+      schema:
+        $ref: "#/components/schemas/Activity/properties/id"
+        
+    ActivityQuery:
+      name: activityId
+      in: query
+      required: true
+      description: The id of the activity
+      schema:
+        $ref: "#/components/schemas/Activity/properties/id"
+
+    Filename:
+      name: filename
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The filename of the media file
+    
+    Message:
+      name: id
+      in: path
+      description: The id of the message
+      required: true
+      schema:
+        $ref: "#/components/schemas/Message/properties/id"
+        
+  responses:
+    User:
+      description: Get the information of the user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                $ref: "#/components/schemas/User/properties/id"
+              name:
+                $ref: "#/components/schemas/User/properties/name"
+              account:
+                $ref: "#/components/schemas/User/properties/account"
+              email:
+                $ref: "#/components/schemas/User/properties/email"
+              avatar:
+                $ref: "#/components/schemas/User/properties/avatar"
+                
+    AccessSuccess:
+      description: Access successfully
+      content:
+        text/plain:
+          schema:
+            $ref: "#/components/schemas/JWTToken"
+
+    AccessFail:
+      description: Fail to access
+
+    InvalidOTP:
+      description: The error of OTP
+      content:
+        text/plain:
+          schema:
+            type: integer
+            description: |
+              The error code about OTP
+              * 1: The token is invalid or expired
+              * 2: The account is not valid
+            enum:
+              - 1
+              - 2
+
+    SignInError:
+      description: Fail to access to the account
+      content:
+        text/plain:
+          schema:
+            type: integer
+            description: |
+              The error code when failing to create an account.
+              * 1: The account is used.
+              * 2: The email is used.
+              * 3: The password length should be > 8
+              * 4: The password needs to include uppercases, lowercases and numbers, except for special characters.
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+
+    SignUpError:
+      description: Fail to create an account
+      content:
+        text/plain:
+          schema:
+            type: integer
+            description: |
+              The error code when failing to create an account.
+              * 1: The account is used.
+              * 2: The email is used.
+              * 3: The password length should be > 8 and < 30
+              * 4:  The password needs to include uppercases, lowercases and numbers, except for special characters.
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              
+    Votes:
+      description: The information of votes in the activity
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  description: The id of the option
+                votes:
+                  type: integer
+                  format: int64
+                  description: The count of votes to the option
+                self:
+                  type: boolean
+                  description: Check whether user votes it
+
+    InvalidOption:
+      description: The "option" field is not match with the choice type of the activity
+
+    Messages:
+      description: Get all messages successfully
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/Message/properties/id"
+                content:
+                  $ref: "#/components/schemas/Message/properties/content"
+                create:
+                  $ref: "#/components/schemas/Message/properties/create"
+                lastUpdate:
+                  $ref: "#/components/schemas/Message/properties/lastUpdate"
+                children:
+                  type: array
+                  items:
+                    type: object
+    
+  requestBodies:
+    SignIn:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              account:
+                oneOf:
+                  - $ref: "#/components/schemas/User/properties/account"
+                  - $ref: "#/components/schemas/User/properties/email"
+                description: The account or email of the user
+              password:
+                $ref: "#/components/schemas/User/properties/password"
+            required:
+              - account
+              - password
+    SignUp:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              account:
+                $ref: "#/components/schemas/User/properties/account"
+              name:
+                $ref: "#/components/schemas/User/properties/name"
+              email:
+                $ref: "#/components/schemas/User/properties/email"
+              password:
+                $ref: "#/components/schemas/User/properties/password"
+            required:
+              - account
+              - name
+              - email
+              - password
+    Activity:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              owner:
+                allOf:
+                  - $ref: "#/components/schemas/User/properties/id"
+                description: The id of the owner
+              title:
+                $ref: "#/components/schemas/Activity/properties/title"
+              content:
+                $ref: "#/components/schemas/Activity/properties/content"
+              viewable:
+                $ref: "#/components/schemas/Activity/properties/viewable"
+              start:
+                $ref: "#/components/schemas/Activity/properties/start"
+              end:
+                $ref: "#/components/schemas/Activity/properties/end"
+              options:
+                $ref: "#/components/schemas/Activity/properties/options"
+            required:
+              - owner
+              - title
+              - content
+              - viewable
+              - start
+              - end
+              - options
+
+    ActivityUpdate:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                $ref: "#/components/schemas/Activity/properties/title"
+              content:
+                $ref: "#/components/schemas/Activity/properties/content"
+              viewable:
+                $ref: "#/components/schemas/Activity/properties/viewable"
+              start:
+                $ref: "#/components/schemas/Activity/properties/start"
+              end:
+                $ref: "#/components/schemas/Activity/properties/end"
+              options:
+                type: array
+                items:
+                  type: string
+                  minLength: 1
+    OTP:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              cause:
+                type: string
+                description: |
+                  * account: Update the account of the user
+                  * account-delete: Delete the account of the user
+                  * email: Update the email of the user
+                  * password: Update the email of the user
+                enum:
+                  - account
+                  - account-delete
+                  - email
+                  - password
+              account:
+                oneOf:
+                  - $ref: "#/components/schemas/User/properties/account"
+                  - $ref: "#/components/schemas/User/properties/email"
+                description: The account or email
+            required:
+              - cause
+              - account
+
+    OTPVerify:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              account:
+                oneOf:
+                  - $ref: "#/components/schemas/User/properties/account"
+                  - $ref: "#/components/schemas/User/properties/email"
+                description: The account or email
+              token:
+                type: string
+                description: The OTP service token
+            required:
+              - account
+              - token
+
+    Vote:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              owner:
+                allOf:
+                  - $ref: "#/components/schemas/User/properties/id"
+                description: The id of the owner
+              activity:
+                $ref: "#/components/schemas/Activity/properties/id"
+              option:
+                oneOf:
+                  - type: integer
+                    format: int64
+                    description: The option in single-choice activity
+                  - type: array
+                    description: The options in multiple-choice activity
+                    items:
+                      type: integer
+                      format: int64
+            required:
+              - owner
+              - activity
+              - option
+
+    Message:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              owner:
+                allOf:
+                  - $ref: "#/components/schemas/User/properties/id"
+                description: The id of the owner
+              activity:
+                $ref: "#/components/schemas/Activity/properties/id"
+              parent:
+                allOf:
+                  - $ref: "#/components/schemas/Message/properties/id"
+                description: The parent of the message
+              content:
+                $ref: "#/components/schemas/Message/properties/content"
+            required:
+              - owner
+              - activity
+              - parent
+              - content
+              
+    MessageUpdate:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                $ref: "#/components/schemas/Message/properties/id"
+              owner:
+                allOf:
+                  - $ref: "#/components/schemas/User/properties/id"
+                description: The id of the owner
+              activity:
+                $ref: "#/components/schemas/Activity/properties/id"
+              content:
+                $ref: "#/components/schemas/Message/properties/content"
+            required:
+              - id
+              - owner
+              - activity
+              - content
+
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    
+    otpAuth:
+      type: apiKey
+      in: header
+      name: X-OTP-Token
+      
